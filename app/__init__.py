@@ -20,6 +20,7 @@ class Application(tk.Tk):
         title = config.get('application', 'title')
         github_link = config.get('application', 'github_link')
         banner_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner'))
+        banner_inverted_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner_inverted'))
         self.color_palette = {
             'background': config.get('application.color_palette', 'background'),
             'sidebar': config.get('application.color_palette', 'sidebar'),
