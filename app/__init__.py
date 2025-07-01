@@ -107,8 +107,9 @@ class Application(tk.Tk):
 
         
         # START FRAME
-        self.start_frame = StartFrame(self.main_frame, self.color_palette)
+        self.start_frame = StartFrame(self.main_frame, self.color_palette, banner_inverted_filepath)
         self.start_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+        self.start_frame.load()
 
     def load_styles(self):
         ttk.Style().configure('TProgressbar', background=self.color_palette['header'], bordercolor=self.color_palette['background'])

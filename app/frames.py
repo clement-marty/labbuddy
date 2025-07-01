@@ -45,17 +45,25 @@ class StartFrame(CustomFrame):
     TITLE = 'Welcome!'
     TEXT = 'All tools can be seen in the sidebar.\nSelect a tool to get started.'
 
-    def __init__(self, parent: tk.Frame, color_palette: dict) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: dict, banner_filepath: str) -> None:
         super().__init__(parent, color_palette)
 
-        popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
-        popup_frame.place(relx=.25, rely=.2, relwidth=.5, relheight=.3)
+        self.banner_filepath = banner_filepath
+        self.popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.popup_frame.place(relx=.25, rely=.2, relwidth=.5, relheight=.4)
 
-        label1 = tk.Label(popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='w')
-        label2 = tk.Label(popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
-        label1.place(relx=.1, rely=.1, relwidth=.8, relheight=.2)
-        label2.place(relx=.1, rely=.3, relwidth=.8, relheight=.2)
+        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='w')
+        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label1.place(relx=.1, rely=.5, relwidth=.8, relheight=.2)
+        label2.place(relx=.1, rely=.7, relwidth=.8, relheight=.2)
 
+    def _add_banner(self, parent: tk.Frame, banner_filepath: str) -> None:
+        banner = funcs.get_image_widget_from_filepath(parent, banner_filepath, bg=self.color_palette['popup'], relwidth=1, relheight=.5)
+        banner.place(relx=0, rely=0, relwidth=1, relheight=.5)
+
+    def load(self) -> None:
+        self.update()
+        self._add_banner(self.popup_frame, self.banner_filepath)
 
 
 class FileInputFrame(CustomFrame):
