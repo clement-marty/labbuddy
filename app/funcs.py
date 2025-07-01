@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 
 
 
-def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: float =1, relheight: float =1) -> tk.Label:
+def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: float =1, relheight: float =1) -> tk.Frame:
     '''Returns a widget containing the image specified, with it being resized to fit the parent widget
     
     :param tk.Frame parent: The image's parent widget
@@ -15,7 +15,7 @@ def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: fl
     :param str bg: The widget's background color
     :param float relwidth: The width of the widget relative to the parent's width, defaults to 1
     :param float relheight: The height of the widget relative to the parent's height, defaults to 1
-    :return tk.Label: The created widget
+    :return tk.Frame: The created widget
     '''
     scale_w = parent.winfo_width() * relwidth / image.width
     scale_h = parent.winfo_height() * relheight / image.height
@@ -23,10 +23,14 @@ def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: fl
     scaling_factor = min(scale_w, scale_h)
     im = image.resize((int(image.width * scaling_factor), int(image.height * scaling_factor)), resample=Image.Resampling.NEAREST)
 
+    frame = tk.Frame(parent, bg=bg, width=relwidth*parent.winfo_width(), height=relheight*parent.winfo_height())
+
     imtk = ImageTk.PhotoImage(im)
-    widget = tk.Label(parent, image=imtk, bg=bg)
+    widget = tk.Label(frame, image=imtk, bg=bg)
     widget.image = imtk
-    return widget
+    widget.pack(expand=True)
+
+    return frame
 
 def get_image_widget_from_filepath(parent: tk.Frame, filepath: str, bg: str, relwidth: float =1, relheight: float =1) -> tk.Label:
     '''Returns a widget containing the image file specified, with it being resized to fit the parent widget
