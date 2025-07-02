@@ -41,6 +41,13 @@ The application helps automating:
     python main.py
     ```
     
+## ⚙️ Compiling
+
+```bash
+pip install pyinstaller
+pyinstaller main.spec
+```
+The compiled application's files will be located in `dist/main`.
 
 ## 🤝 Contributing
 
