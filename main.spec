@@ -24,7 +24,7 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='LabBuddy',
-    icon='assets/icon.ico',
+    icon='assets/logo.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
