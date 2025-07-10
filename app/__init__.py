@@ -107,11 +107,11 @@ class Application(tk.Tk):
             )
         )
         # Place the submenus in the sidebar
-        y = 0
+        rely = 0
         for submenu in self.submenues:
-            height = 50 * ( len(submenu.options) + 1 )
-            submenu.place(x=0, y=y, relwidth=1, height=height)
-            y += height
+            relheight = .1 + .05 * len(submenu.options)
+            submenu.place(relx=0, rely=rely, relwidth=1, relheight=relheight)
+            rely += relheight
 
         # Add the buttons at the bottom of the sidebar
         btn_params = {
@@ -188,10 +188,13 @@ class SidebarSubMenu(tk.Frame):
             font=('', 12, 'bold'),
             fg='#ffffff'
         )
-        self.sub_menu_heading_label.place(x=30, y=10, anchor='w')
+
+        rely_unit = 1 / (len(option_classes) + 2)
+
+        self.sub_menu_heading_label.place(relx=.1, rely=rely_unit*.5, relwidth=.8, relheight=rely_unit)
 
         sub_menu_sep = ttk.Separator(self, orient='horizontal')
-        sub_menu_sep.place(x=30, y=30, relwidth=.8, anchor='w')
+        sub_menu_sep.place(relx=.1, rely=rely_unit*1.5, relwidth=.8)
 
         self.options = []
         for option_class in option_classes:
@@ -216,4 +219,4 @@ class SidebarSubMenu(tk.Frame):
                 borderwidth=1,
                 command=option.load
             )
-            button.place(x=30, y=60 + 30*i, anchor='w')
+            button.place(relx=.1, rely=rely_unit * (i+2), relwidth=.8, relheight=rely_unit)
