@@ -28,6 +28,13 @@ class Application(tk.Tk):
             'popup': config.get('application.color_palette', 'popup'),
             'warning': config.get('application.color_palette', 'warning')
         }
+        self.icons = {
+            'information': config.get('application.icons', 'information'),
+            'alert': config.get('application.icons', 'alert'),
+            'quit': config.get('application.icons', 'quit'),
+            'settings': config.get('application.icons', 'settings'),
+            'github': config.get('application.icons', 'github')
+        }
 
         self.title(title)
         self.geometry('1200x800')
