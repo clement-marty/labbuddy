@@ -131,6 +131,14 @@ class Application(tk.Tk):
             relx=.125, rely=.9, relwidth=.15, relheight=.05,
             **btn_params
         )
+        funcs.add_icon_button( # Credits
+            parent=self.submenues_frame,
+            svg_file=self.icons['information'],
+            color=self.color_palette['background'],
+            hovered_color=self.color_palette['sidebar'],
+            relx=.325, rely=.9, relwidth=.15, relheight=.05,
+            **btn_params
+        )
         
         # START FRAME
         self.start_frame = StartFrame(self.main_frame, self.color_palette, banner_inverted_filepath)
