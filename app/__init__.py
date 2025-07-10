@@ -147,6 +147,15 @@ class Application(tk.Tk):
             relx=.525, rely=.9, relwidth=.15, relheight=.05,
             command=lambda: webbrowser.open(github_link), **btn_params
         )
+        funcs.add_icon_button( # Quit
+            parent=self.submenues_frame, 
+            svg_file=self.icons['quit'], 
+            color=self.color_palette['background'],
+            hovered_color=self.color_palette['warning'], 
+            relx=.7, rely=.9, relwidth=.15, relheight=.05, 
+            command=self.close_app, **btn_params
+        )
+        
         
         # START FRAME
         self.start_frame = StartFrame(self.main_frame, self.color_palette, banner_inverted_filepath)
