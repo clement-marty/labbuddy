@@ -1,4 +1,6 @@
+import io
 import cv2
+import cairosvg
 import tkinter as tk
 import matplotlib
 import matplotlib.pyplot as plt
@@ -104,3 +106,61 @@ def equation_widget(parent: tk.Frame, exps: list[str], bg: str = None) -> tk.Wid
     canvas.draw()
 
     return canvas.get_tk_widget()
+
+def get_icon_image(svg_file: str, color: str, width: int, height: int) -> ImageTk.PhotoImage:
+    '''Returns a PIL Image of an icon in svg format
+    
+    :param str svg_file: The path to the svg file of the icon
+    :param str color: The color of the icon in the returned image
+    :param int width: The width of the image
+    :param int height: The height of the image
+    :return Image.Image: The image containing the icon
+    '''
+    with open(svg_file, 'r') as f:
+        svg = ''.join(f.readlines()) # Read the svg file
+
+    # Change the icon's color
+    elements = ['path', 'polygon', 'polyline', 'text', 'textPath', 'tref', 'tspan']
+    for e in elements:
+        svg = svg.replace(f'<{e} ', f'<{e} fill="{color}" ')
+    png = cairosvg.svg2png(bytestring=str(svg).encode('utf-8'), output_width=width, output_height=height) # Convert the csv to png
+    return ImageTk.PhotoImage(Image.open(io.BytesIO(png)))
+
+def get_icon_image_widget(parent: tk.Frame, svg_file: str, color: str, bg: str) -> tk.Frame:
+    '''Returns a widget containing the icon specified
+
+    :param tk.Frame parent: The icon's parent widget
+    :param str svg_file The path to the svg file of the icon
+    :param str color: The color of the icon in the returned widget
+    :param str bg: The widget's background color
+    :return tk.Frame: The created widget    
+    '''
+    return get_image_widget(
+        parent,
+        get_icon_image(svg_file, color, parent.winfo_width(), parent.winfo_height()),
+        bg
+    )
+
+def add_icon_button(parent: tk.Frame, svg_file: str, color: str, hovered_color: str, relx: float, rely:float, relwidth: float, relheight: float, **kwargs) -> tk.Button:
+    '''Places and returns a button containing an icon
+    
+    :param tk.Frame parent: The button's parent widget
+    :param str svg_file: The path to the svg file of the icon
+    :param str color: The default color of the icon
+    :param str hovered_color: The color of the icon when hovered
+    :param float relx: The relative x position of the button
+    :param float rely: The relative y position of the button
+    :param float relwidth: The relative width of the button
+    :param float relheight: The relative height of the button
+    :param dict[str, any] kwargs: tk.Button parameters
+    :return tk.Button: The created button
+    '''
+    width = int(parent.winfo_width() * relwidth)
+    height = int(parent.winfo_height() * relheight)
+    default_icon = get_icon_image(svg_file, color, width, height)
+    hovered_icon = get_icon_image(svg_file, hovered_color, width, height)
+    button = tk.Button(parent, image=default_icon, **kwargs)
+    button.bind('<Enter>', func=lambda _: button.config(image=hovered_icon))
+    button.bind('<Leave>', func=lambda _: button.config(image=default_icon))
+    button.place(relx=relx, rely=rely, relwidth=relwidth, relheight=relheight)
+    return button
