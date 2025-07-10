@@ -85,6 +85,7 @@ class Application(tk.Tk):
         # SUBMENUES
         self.submenues_frame = tk.Frame(self.sidebar, bg=self.color_palette['sidebar'])
         self.submenues_frame.place(relx=0, rely=.15, relwidth=1, relheight=.85)
+        self.submenues_frame.update()
         self.submenues = (
             SidebarSubMenu(
                 self.submenues_frame,
@@ -112,6 +113,24 @@ class Application(tk.Tk):
             submenu.place(x=0, y=y, relwidth=1, height=height)
             y += height
 
+        # Add the buttons at the bottom of the sidebar
+        btn_params = {
+            'bg': self.color_palette['sidebar'],
+            'bd': 0,
+            'highlightthickness': 0,
+            'relief': 'flat',
+            'cursor': 'hand2',
+            'activebackground': self.color_palette['background'],
+            'borderwidth': 1
+        }
+        funcs.add_icon_button( # Settings
+            parent=self.submenues_frame,
+            svg_file=self.icons['settings'],
+            color=self.color_palette['background'],
+            hovered_color=self.color_palette['sidebar'],
+            relx=.125, rely=.9, relwidth=.15, relheight=.05,
+            **btn_params
+        )
         
         # START FRAME
         self.start_frame = StartFrame(self.main_frame, self.color_palette, banner_inverted_filepath)
