@@ -18,6 +18,7 @@ class Application(tk.Tk):
         self.protocol('WM_DELETE_WINDOW', self.close_app)
 
         title = config.get('application', 'title')
+        version = config.get('application', 'version')
         github_link = config.get('application', 'github_link')
         banner_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner'))
         banner_inverted_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner_inverted'))
@@ -155,6 +156,15 @@ class Application(tk.Tk):
             relx=.7, rely=.9, relwidth=.15, relheight=.05, 
             command=self.close_app, **btn_params
         )
+        version_label = tk.Label(
+            self.submenues_frame,
+            text=f'version {version}',
+            bg=self.color_palette['sidebar'],
+            font=('', 10, 'italic'),
+            fg='#ffffff',
+            anchor='c',
+        )
+        version_label.place(relx=.1, rely=.95, relwidth=.8, relheight=.05)
         
         
         # START FRAME
