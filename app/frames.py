@@ -270,3 +270,21 @@ class PanZoomCanvas(CustomFrame):
             if point is not None:
                 self.marked_points.append(point)
         self.update_canvas()
+
+
+
+class ComingSoonFrame(CustomFrame):
+
+    TITLE = 'Coming soon!'
+    TEXT = 'This feature is still in development\nand will be available in a future update.'
+
+    def __init__(self, parent: tk.Frame, color_palette: dict) -> None:
+        super().__init__(parent, color_palette)
+
+        self.popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.popup_frame.place(relx=.25, rely=.3, relwidth=.5, relheight=.2)
+
+        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='w')
+        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label1.place(relx=.1, rely=.2, relwidth=.8, relheight=.2)
+        label2.place(relx=.1, rely=.4, relwidth=.8, relheight=.5)

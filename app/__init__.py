@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from . import funcs
-from .frames import StartFrame
+from .frames import StartFrame, ComingSoonFrame
 from .object_detection import ObjectDetection
 from .minmax_slopes import MinMaxSlopes
 
@@ -129,7 +129,7 @@ class Application(tk.Tk):
             color=self.color_palette['background'],
             hovered_color=self.color_palette['sidebar'],
             relx=.125, rely=.9, relwidth=.15, relheight=.05,
-            **btn_params
+            command=self.show_coming_soon_frame, **btn_params
         )
         funcs.add_icon_button( # Credits
             parent=self.submenues_frame,
@@ -137,7 +137,7 @@ class Application(tk.Tk):
             color=self.color_palette['background'],
             hovered_color=self.color_palette['sidebar'],
             relx=.325, rely=.9, relwidth=.15, relheight=.05,
-            **btn_params
+            command=self.show_coming_soon_frame, **btn_params
         )
         funcs.add_icon_button( # Github repository
             parent=self.submenues_frame,
@@ -164,6 +164,11 @@ class Application(tk.Tk):
 
     def load_styles(self):
         ttk.Style().configure('TProgressbar', background=self.color_palette['header'], bordercolor=self.color_palette['background'])
+
+    def show_coming_soon_frame(self):
+        frame = ComingSoonFrame(self.main_frame, self.color_palette)
+        frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+        frame.tkraise()
 
     def close_app(self):
         self.quit()
