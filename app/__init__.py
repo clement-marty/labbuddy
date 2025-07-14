@@ -18,7 +18,7 @@ class Application(tk.Tk):
         self.protocol('WM_DELETE_WINDOW', self.close_app)
 
         title = config.get('application', 'title')
-        version = config.get('application', 'version')
+        self.version = config.get('application', 'version')
         github_link = config.get('application', 'github_link')
         banner_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner'))
         banner_inverted_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner_inverted'))
@@ -158,7 +158,7 @@ class Application(tk.Tk):
         )
         version_label = tk.Label(
             self.submenues_frame,
-            text=f'version {version}',
+            text=f'version {self.version}',
             bg=self.color_palette['sidebar'],
             font=('', 10, 'italic'),
             fg='#ffffff',
