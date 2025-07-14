@@ -79,7 +79,7 @@ class Application(tk.Tk):
         logo.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         # MAIN FRAME
-        self.main_frame = tk.Frame(self, bg='#ff0000')
+        self.main_frame = tk.Frame(self, bg=self.color_palette['background'])
         self.main_frame.place(relx=.2, rely=.1, relwidth=.8, relheight=.9)
 
         # SUBMENUES
