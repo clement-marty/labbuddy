@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 
 
 
-def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: float =1, relheight: float =1) -> tk.Frame:
+def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: float =1, relheight: float =1, return_as_label: bool =False) -> tk.Frame|tk.Label:
     '''Returns a widget containing the image specified, with it being resized to fit the parent widget
     
     :param tk.Frame parent: The image's parent widget
@@ -17,24 +17,29 @@ def get_image_widget(parent: tk.Frame, image: Image.Image, bg: str, relwidth: fl
     :param str bg: The widget's background color
     :param float relwidth: The width of the widget relative to the parent's width, defaults to 1
     :param float relheight: The height of the widget relative to the parent's height, defaults to 1
-    :return tk.Frame: The created widget
+    :param bool return_as_label: Whether the returned widget should be object of the tk.Frame or tk.Label class
+    :return tk.Frame|tk.Label: The created widget
     '''
     scale_w = parent.winfo_width() * relwidth / image.width
     scale_h = parent.winfo_height() * relheight / image.height
 
     scaling_factor = min(scale_w, scale_h)
     im = image.resize((int(image.width * scaling_factor), int(image.height * scaling_factor)), resample=Image.Resampling.NEAREST)
-
-    frame = tk.Frame(parent, bg=bg, width=relwidth*parent.winfo_width(), height=relheight*parent.winfo_height())
-
     imtk = ImageTk.PhotoImage(im)
-    widget = tk.Label(frame, image=imtk, bg=bg)
-    widget.image = imtk
-    widget.pack(expand=True)
 
-    return frame
+    if not return_as_label:
+        frame = tk.Frame(parent, bg=bg, width=relwidth*parent.winfo_width(), height=relheight*parent.winfo_height())
+        widget = tk.Label(frame, image=imtk, bg=bg)
+        widget.image = imtk
+        widget.pack(expand=True)
+        return frame
 
-def get_image_widget_from_filepath(parent: tk.Frame, filepath: str, bg: str, relwidth: float =1, relheight: float =1) -> tk.Label:
+    else:
+        widget = tk.Label(parent, image=imtk, bg=bg)
+        widget.image = imtk
+        return widget
+
+def get_image_widget_from_filepath(parent: tk.Frame, filepath: str, bg: str, relwidth: float =1, relheight: float =1, return_as_label: bool = False) -> tk.Frame|tk.Label:
     '''Returns a widget containing the image file specified, with it being resized to fit the parent widget
     
     :param tk.Frame parent: The image's parent widget
@@ -42,12 +47,13 @@ def get_image_widget_from_filepath(parent: tk.Frame, filepath: str, bg: str, rel
     :param str bg: The widget's background color
     :param float relwidth: The width of the widget relative to the parent's width, defaults to 1
     :param float relheight: The height of the widget relative to the parent's height, defaults to 1
-    :return tk.Label: The created widget
+    :param bool return_as_label: Whether the returned widget should be object of the tk.Frame or tk.Label class
+    :return tk.Frame|tk.Label: The created widget
     '''
     image = Image.open(filepath)
-    return get_image_widget(parent, image, bg, relwidth, relheight)
+    return get_image_widget(parent, image, bg, relwidth, relheight, return_as_label)
 
-def get_image_widget_from_cv2(parent: tk.Frame, image: cv2.typing.MatLike, bg: str, relwidth: float =1, relheight: float =1) -> tk.Label:
+def get_image_widget_from_cv2(parent: tk.Frame, image: cv2.typing.MatLike, bg: str, relwidth: float =1, relheight: float =1, return_as_label: bool =False) -> tk.Frame|tk.Label:
     '''Returns a widget containing the opencv image specified, with it being resized to fit the parent widget
     
     :param tk.Frame parent: The image's parent widget
@@ -55,10 +61,11 @@ def get_image_widget_from_cv2(parent: tk.Frame, image: cv2.typing.MatLike, bg: s
     :param str bg: The widget's background color
     :param float relwidth: The width of the widget relative to the parent's width, defaults to 1
     :param float relheight: The height of the widget relative to the parent's height, defaults to 1
-    :return tk.Label: The created widget
+    :param bool return_as_label: Whether the returned widget should be object of the tk.Frame or tk.Label class
+    :return tk.Frame|tk.Label: The created widget
     '''
     im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    return get_image_widget(parent, im, bg, relwidth, relheight)
+    return get_image_widget(parent, im, bg, relwidth, relheight, return_as_label)
 
 def collision_line_rectangle(m: float, c: float, x: float, y: float, w: float, h: float) -> bool:
     '''Checks if a line (y=mx+c) collides with a rectangle

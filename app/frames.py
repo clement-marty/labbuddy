@@ -117,7 +117,7 @@ class DeterminateProgressbarFrame(CustomFrame):
     def set_progress(self, progress: int, maximum: int, text: str, image: cv2.typing.MatLike = None) -> None:
         self.update()
         if image is not None:
-            self.image_widget = funcs.get_image_widget_from_cv2(self, image, bg=self.color_palette['background'], relwidth=.9, relheight=.6)
+            self.image_widget = funcs.get_image_widget_from_cv2(self, image, bg=self.color_palette['background'], relwidth=.9, relheight=.6, return_as_label=True)
             self.image_widget.place(relx=.05, rely=.05, relwidth=.9, relheight=.6)
         elif self.image_widget is not None:
             self.image_widget.config(state='disabled')
@@ -203,7 +203,7 @@ class PanZoomCanvas(CustomFrame):
 
     def update_canvas(self) -> None:
         self.update()
-        image = funcs.get_image_widget_from_cv2(self, self.cv2_image, bg=self.color_palette['background'], relheight=self.zoom, relwidth=self.zoom)
+        image = funcs.get_image_widget_from_cv2(self, self.cv2_image, bg=self.color_palette['background'], relheight=self.zoom, relwidth=self.zoom, return_as_label=True)
         canvas_w, canvas_h = self.canvas.winfo_width(), self.canvas.winfo_height()
         self.canvas.delete('all')
         self.canvas.create_image(canvas_w//2 + self.offset_x, canvas_h//2 + self.offset_y, anchor='center', image=image.image)
