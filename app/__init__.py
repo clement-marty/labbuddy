@@ -176,6 +176,8 @@ class Application(tk.Tk):
         ttk.Style().configure('TProgressbar', background=self.color_palette['header'], bordercolor=self.color_palette['background'])
 
     def show_coming_soon_frame(self):
+        self.header_title.config(text='')
+        self.header_subtitle.config(text='')
         frame = ComingSoonFrame(self.main_frame, self.color_palette)
         frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         frame.tkraise()
