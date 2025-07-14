@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from . import funcs
-from .frames import StartFrame, ComingSoonFrame
+from .frames import StartFrame, ComingSoonFrame, CreditsFrame
 from .object_detection import ObjectDetection
 from .minmax_slopes import MinMaxSlopes
 
@@ -138,7 +138,7 @@ class Application(tk.Tk):
             color=self.color_palette['background'],
             hovered_color=self.color_palette['sidebar'],
             relx=.325, rely=.9, relwidth=.15, relheight=.05,
-            command=self.show_coming_soon_frame, **btn_params
+            command=self.show_credits_frame, **btn_params
         )
         funcs.add_icon_button( # Github repository
             parent=self.submenues_frame,
@@ -182,6 +182,13 @@ class Application(tk.Tk):
         frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         frame.tkraise()
 
+    def show_credits_frame(self):
+        self.header_title.config(text='')
+        self.header_subtitle.config(text='')
+        frame = CreditsFrame(self.main_frame, self.color_palette, self.version)
+        frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+        frame.tkraise()
+    
     def close_app(self):
         self.quit()
         self.destroy()

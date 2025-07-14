@@ -288,3 +288,57 @@ class ComingSoonFrame(CustomFrame):
         label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
         label1.place(relx=.1, rely=.2, relwidth=.8, relheight=.2)
         label2.place(relx=.1, rely=.4, relwidth=.8, relheight=.5)
+
+
+
+class CreditsFrame(CustomFrame):
+
+    TITLE = 'About LabBuddy'
+    TEXT_1 = '''LabBuddy v1.1.1
+Physics Lab Assistant Tool
+
+DEVELOPED BY
+Clément MARTY
+GitHub: @clement-marty
+
+BUILT WITH Python 3.12
+
+THIRD-PARTY LIBRARIES
+This software uses the following\nopen-source libraries:
+• OpenCV (opencv-python 4.11.0.86)
+• Matplotlib (3.10.3)
+• NumPy (2.3.0)
+• Pandas (2.3.0)
+• Pillow (11.2.1)
+• And other supporting libraries\n(see requirements.txt)
+'''
+    TEXT_2 = '''LICENSE
+This project is licensed\nunder the MIT License.
+
+Copyright © 2025 Clément MARTY
+
+CONTRIBUTING
+Contributions are welcome! Please\nvisit our GitHub repository to:
+• Report issues or bugs
+• Suggest new features
+• Submit pull requests
+• Join discussions
+
+SUPPORT
+Need help? Open an issue on GitHub\nor contact @clement-marty
+
+Thank you for using LabBuddy!
+'''
+
+    def __init__(self, parent: tk.Frame, color_palette: dict, app_version: str) -> None:
+        super().__init__(parent, color_palette)
+
+        self.popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.popup_frame.place(relx=.1, rely=.1, relwidth=.8, relheight=.75)
+
+        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='c')
+        label2 = tk.Label(self.popup_frame, text=self.TEXT_1, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label3 = tk.Label(self.popup_frame, text=self.TEXT_2, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label1.place(relx=.1, rely=.05, relwidth=.8, relheight=.05)
+        label2.place(relx=.05, rely=.1, relwidth=.425, relheight=.9)
+        label3.place(relx=.55, rely=.1, relwidth=.425, relheight=.9)
