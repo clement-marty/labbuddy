@@ -23,21 +23,8 @@ class Application(tk.Tk):
         github_link = config.get('application', 'github_link')
         banner_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner'))
         banner_inverted_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner_inverted'))
-        # self.color_palette = {
-        #     'background': config.get('application.color_palette', 'background'),
-        #     'sidebar': config.get('application.color_palette', 'sidebar'),
-        #     'header': config.get('application.color_palette', 'header'),
-        #     'popup': config.get('application.color_palette', 'popup'),
-        #     'warning': config.get('application.color_palette', 'warning')
-        # }
         self.color_palette = enums.ColorPaletteEnum(config)
-        self.icons = {
-            'information': config.get('application.icons', 'information'),
-            'alert': config.get('application.icons', 'alert'),
-            'quit': config.get('application.icons', 'quit'),
-            'settings': config.get('application.icons', 'settings'),
-            'github': config.get('application.icons', 'github')
-        }
+        self.icons = enums.IconsEnum(config)
 
         self.title(title)
         self.geometry('1200x800')
@@ -128,7 +115,7 @@ class Application(tk.Tk):
         }
         funcs.add_icon_button( # Settings
             parent=self.submenues_frame,
-            svg_file=self.icons['settings'],
+            svg_file=self.icons.SETTINGS,
             color=self.color_palette.BACKGROUND,
             hovered_color=self.color_palette.SIDEBAR,
             relx=.125, rely=.9, relwidth=.15, relheight=.05,
@@ -136,7 +123,7 @@ class Application(tk.Tk):
         )
         funcs.add_icon_button( # Credits
             parent=self.submenues_frame,
-            svg_file=self.icons['information'],
+            svg_file=self.icons.INFORMATION,
             color=self.color_palette.BACKGROUND,
             hovered_color=self.color_palette.SIDEBAR,
             relx=.325, rely=.9, relwidth=.15, relheight=.05,
@@ -144,7 +131,7 @@ class Application(tk.Tk):
         )
         funcs.add_icon_button( # Github repository
             parent=self.submenues_frame,
-            svg_file=self.icons['github'],
+            svg_file=self.icons.GITHUB,
             color=self.color_palette.BACKGROUND,
             hovered_color=self.color_palette.SIDEBAR,
             relx=.525, rely=.9, relwidth=.15, relheight=.05,
@@ -152,7 +139,7 @@ class Application(tk.Tk):
         )
         funcs.add_icon_button( # Quit
             parent=self.submenues_frame, 
-            svg_file=self.icons['quit'], 
+            svg_file=self.icons.QUIT, 
             color=self.color_palette.BACKGROUND,
             hovered_color=self.color_palette.WARNING, 
             relx=.7, rely=.9, relwidth=.15, relheight=.05, 
