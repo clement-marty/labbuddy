@@ -7,6 +7,7 @@ import matplotlib.collections as collections
 import matplotlib.backends.backend_tkagg as tkagg
 
 from . import funcs
+from . import enums
 from . import frames
 
 
@@ -22,7 +23,7 @@ class MinMaxSlopes(frames.SubMenuOption):
         ('Spreadsheet files', '*.csv *.ods *.xlsx'),
     ]
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
         super().__init__(parent, color_palette, header_title, header_subtitle)
         self.color_palette = color_palette
 
@@ -102,7 +103,7 @@ class MinMaxSlopes(frames.SubMenuOption):
 
 class DataSelectionFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, data: pd.DataFrame = None, excel_file: pd.ExcelFile = None) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.configparser, data: pd.DataFrame = None, excel_file: pd.ExcelFile = None) -> None:
         super().__init__(parent, color_palette)
         self.data = data
         self.excel_file = excel_file
@@ -120,43 +121,43 @@ class DataSelectionFrame(frames.CustomFrame):
         self.x_uncertainties_column = tk.StringVar(value='')
         self.y_uncertainties_column = tk.StringVar(value='')
 
-        self.options_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.options_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.options_frame.place(relx=.2, rely=.1, relwidth=.6, relheight=.8)
 
         button_params = {
             'master': self.options_frame,
             'font': ('', 10),
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 1,
         }
         label_params = {
             'master': self.options_frame,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10),
             'anchor': 'w',
             'justify': 'left'
         }
         option_menu_params = {
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10),
             'bd': 0,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header']
+            'activebackground': self.color_palette.HEADER
         }
         entry_params = {
             'master': self.options_frame,
             'font': ('', 10), 
-            'bg': self.color_palette['background'],
+            'bg': self.color_palette.BACKGROUND,
             'bd': 0,
             'cursor': 'hand2'
         }
         checkbox_params = {
             'master': self.options_frame,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 0
         }
         title_label_params = label_params.copy()
@@ -227,7 +228,7 @@ class DataSelectionFrame(frames.CustomFrame):
             c1, c2 = column_names[0], column_names[1]
             c3, c4 = column_names[2%len(column_names)], column_names[3%len(column_names)]
         else:
-            self.sheet_selector.config(bg=self.color_palette['warning'])
+            self.sheet_selector.config(bg=self.color_palette.WARNING)
         
         if not (self.x_column_name.get() in column_names and self.y_column_name.get() in column_names):
             self.x_column_name.set(c1)
@@ -265,14 +266,14 @@ class DataSelectionFrame(frames.CustomFrame):
     def _update_uncertainties_options(self, uncertainty_type: str, entry: tk.Entry, selector: tk.OptionMenu, selector_variable: tk.StringVar) -> None:
         if uncertainty_type == self.uncertainties_type_selector_options[-1]:
             entry.delete(0, tk.END)
-            entry.config(bg=self.color_palette['header'])
-            selector.config(bg=self.color_palette['popup'])
+            entry.config(bg=self.color_palette.HEADER)
+            selector.config(bg=self.color_palette.POPUP)
             self._update_selector_options()
         else:
             selector_variable.set('')
             selector['menu'].delete(0, tk.END)
-            selector.config(bg=self.color_palette['header'])
-            entry.config(bg=self.color_palette['popup'])
+            selector.config(bg=self.color_palette.HEADER)
+            entry.config(bg=self.color_palette.POPUP)
 
     def _validate_x_uncertainties_input(self, input_str: str) -> bool:
         return self._validate_uncertainties_input(input_str, x_values=True)
@@ -308,7 +309,7 @@ class DataSelectionFrame(frames.CustomFrame):
 
 class PlotFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, x_values: list[float], y_values: list[float], x_name: str, y_name: str, dx_values: list[float], dy_values: list[float]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, x_values: list[float], y_values: list[float], x_name: str, y_name: str, dx_values: list[float], dy_values: list[float]) -> None:
         super().__init__(parent, color_palette)
 
         self.x_values, self.y_values = x_values, y_values
@@ -320,7 +321,7 @@ class PlotFrame(frames.CustomFrame):
         self.min_y_intercept: float = None
         self.max_y_intercept: float = None
 
-        self.btns_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.btns_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.btns_frame.place(relx=0, rely=.8, relwidth=1, relheight=.2)
 
         self._add_graph_canvas()
@@ -337,7 +338,7 @@ class PlotFrame(frames.CustomFrame):
 
     def _add_graph_canvas(self) -> None:
         fig, ax = plt.subplots(1, 1)
-        fig.patch.set_facecolor(self.color_palette['background'])
+        fig.patch.set_facecolor(self.color_palette.BACKGROUND)
         ax.plot(self.x_values, self.y_values, 'k+')
         self._add_uncertainty_boxes(ax)
         self._get_slopes()
@@ -347,7 +348,7 @@ class PlotFrame(frames.CustomFrame):
         canvas = tkagg.FigureCanvasTkAgg(fig, master=self)
         canvas.draw()
         toolbar = tkagg.NavigationToolbar2Tk(canvas, window=self.btns_frame)
-        toolbar.config(bg=self.color_palette['popup'])
+        toolbar.config(bg=self.color_palette.POPUP)
         toolbar.update()
         canvas.get_tk_widget().place(relx=0, rely=0, relwidth=1, relheight=.8)
         toolbar.place(relx=.05, rely=.6, relwidth=.4, relheight=.3)
@@ -405,7 +406,6 @@ class PlotFrame(frames.CustomFrame):
             self.avg_slope = (self.max_slope + self.min_slope) / 2
             self.slope_uncertainty = (self.max_slope - self.min_slope) / 2
 
-
     def _is_slope_valid(self, slope: float, y_intercept: float) -> bool:
         '''Checks if the provided line crosses all uncertainty boxes of all points
 
@@ -430,27 +430,27 @@ class PlotFrame(frames.CustomFrame):
         return valid
 
     def _display_slope_equation(self, parent: tk.Frame, slope: float, y_intercept: float, text: str) -> None:
-        frame = tk.Frame(parent, bg=self.color_palette['popup'])
+        frame = tk.Frame(parent, bg=self.color_palette.POPUP)
         label_params = {
             'master': frame,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10, 'bold'),
             'anchor': 'c',
             'justify': 'center'
         }
         tk.Label(text=text, **label_params).pack(expand=True)
         frame.place(relx=0, rely=0, relwidth=1, relheight=.25)
-        funcs.equation_widget(parent, [f'm={slope}', f'c={y_intercept}'], bg=self.color_palette['popup']).place(relx=0, rely=.25, relwidth=1, relheight=.75)
+        funcs.equation_widget(parent, [f'm={slope}', f'c={y_intercept}'], bg=self.color_palette.POPUP).place(relx=0, rely=.25, relwidth=1, relheight=.75)
 
     def _display_slope_result(self, parent: tk.Frame, slope: float, slope_uncertainty: float, text: str) -> None:
-        frame = tk.Frame(parent, bg=self.color_palette['popup'])
+        frame = tk.Frame(parent, bg=self.color_palette.POPUP)
         label_params = {
             'master': frame,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10, 'bold'),
             'anchor': 'c',
             'justify': 'center'
         }
         tk.Label(text=text, **label_params).pack(expand=True)
         frame.place(relx=0, rely=0, relwidth=1, relheight=.25)
-        funcs.equation_widget(parent, [f'm={slope}', f'\\Delta m={slope_uncertainty}'], bg=self.color_palette['popup']).place(relx=0, rely=.25, relwidth=1, relheight=.75)
+        funcs.equation_widget(parent, [f'm={slope}', f'\\Delta m={slope_uncertainty}'], bg=self.color_palette.POPUP).place(relx=0, rely=.25, relwidth=1, relheight=.75)

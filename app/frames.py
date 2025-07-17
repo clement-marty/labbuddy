@@ -5,14 +5,15 @@ from tkinter import ttk
 from tkinter import filedialog
 
 from . import funcs
+from . import enums
 
 
 class CustomFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum) -> None:
         tk.Frame.__init__(self, parent)
         self.color_palette = color_palette   
-        self.config(bg=self.color_palette['background'])
+        self.config(bg=self.color_palette.BACKGROUND)
 
 
 
@@ -23,10 +24,10 @@ class SubMenuOption(tk.Frame):
     title = None
     subtitle = None
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
         tk.Frame.__init__(self, parent)
         self.color_palette = color_palette
-        self.config(bg=self.color_palette['background'])
+        self.config(bg=self.color_palette.BACKGROUND)
 
         self.header_title = header_title
         self.header_subtitle = header_subtitle
@@ -45,20 +46,20 @@ class StartFrame(CustomFrame):
     TITLE = 'Welcome!'
     TEXT = 'All tools can be seen in the sidebar.\nSelect a tool to get started.'
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, banner_filepath: str) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, banner_filepath: str) -> None:
         super().__init__(parent, color_palette)
 
         self.banner_filepath = banner_filepath
-        self.popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.popup_frame.place(relx=.25, rely=.2, relwidth=.5, relheight=.4)
 
-        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='w')
-        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
+        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
         label1.place(relx=.1, rely=.5, relwidth=.8, relheight=.2)
         label2.place(relx=.1, rely=.7, relwidth=.8, relheight=.2)
 
     def _add_banner(self, parent: tk.Frame, banner_filepath: str) -> None:
-        banner = funcs.get_image_widget_from_filepath(parent, banner_filepath, bg=self.color_palette['popup'], relwidth=1, relheight=.5)
+        banner = funcs.get_image_widget_from_filepath(parent, banner_filepath, bg=self.color_palette.POPUP, relwidth=1, relheight=.5)
         banner.place(relx=0, rely=0, relwidth=1, relheight=.5)
 
     def load(self) -> None:
@@ -66,16 +67,17 @@ class StartFrame(CustomFrame):
         self._add_banner(self.popup_frame, self.banner_filepath)
 
 
+
 class FileInputFrame(CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, title: str, text: str, filetypes: list[tuple[str, str]]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, title: str, text: str, filetypes: list[tuple[str, str]]) -> None:
         super().__init__(parent, color_palette)
 
-        popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         popup_frame.place(relx=.25, rely=.2, relwidth=.5, relheight=.3)
 
-        self.label1 = tk.Label(popup_frame, text=title, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='w')
-        self.label2 = tk.Label(popup_frame, text=text, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w')
+        self.label1 = tk.Label(popup_frame, text=title, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
+        self.label2 = tk.Label(popup_frame, text=text, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w')
         self.label1.place(relx=.1, rely=.1, relwidth=.8, relheight=.2)
         self.label2.place(relx=.1, rely=.3, relwidth=.8, relheight=.2)
 
@@ -84,9 +86,9 @@ class FileInputFrame(CustomFrame):
             text='Select File',
             font=("Arial", 15, "bold"),
             bd=0,
-            bg=self.color_palette['popup'],
+            bg=self.color_palette.POPUP,
             cursor='hand2',
-            activebackground=self.color_palette['header'],
+            activebackground=self.color_palette.HEADER,
             borderwidth=1,
             command=self._upload_btn_command
         )
@@ -105,10 +107,10 @@ class FileInputFrame(CustomFrame):
 
 class DeterminateProgressbarFrame(CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum) -> None:
         super().__init__(parent, color_palette)
 
-        self.label = tk.Label(self, text='', font=('Arial', 12), bg=self.color_palette['background'], anchor='w')
+        self.label = tk.Label(self, text='', font=('Arial', 12), bg=self.color_palette.BACKGROUND, anchor='w')
         self.progress_bar = ttk.Progressbar(self, mode='determinate')
         self.label.place(relx=.25, rely=.75, relwidth=.5, relheight=.05)
         self.progress_bar.place(relx=.25, rely=.8, relwidth=.5, relheight=.05)
@@ -117,7 +119,7 @@ class DeterminateProgressbarFrame(CustomFrame):
     def set_progress(self, progress: int, maximum: int, text: str, image: cv2.typing.MatLike = None) -> None:
         self.update()
         if image is not None:
-            self.image_widget = funcs.get_image_widget_from_cv2(self, image, bg=self.color_palette['background'], relwidth=.9, relheight=.6, return_as_label=True)
+            self.image_widget = funcs.get_image_widget_from_cv2(self, image, bg=self.color_palette.BACKGROUND, relwidth=.9, relheight=.6, return_as_label=True)
             self.image_widget.place(relx=.05, rely=.05, relwidth=.9, relheight=.6)
         elif self.image_widget is not None:
             self.image_widget.config(state='disabled')
@@ -130,14 +132,14 @@ class DeterminateProgressbarFrame(CustomFrame):
 
 class PanZoomCanvas(CustomFrame):
     
-    def __init__(self, parent: tk.Frame, color_palette: dict, image: cv2.typing.MatLike) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, image: cv2.typing.MatLike) -> None:
         super().__init__(parent, color_palette)
         
         self.cv2_image = image
         self.offset_x = 0
         self.offset_y = 0
         self.zoom = 1
-        self.canvas = tk.Canvas(self, bg=self.color_palette['background'])
+        self.canvas = tk.Canvas(self, bg=self.color_palette.BACKGROUND)
         self.marked_points = []
 
         self.canvas.bind('<Button-1>', self._on_mouse_left_click)
@@ -203,7 +205,7 @@ class PanZoomCanvas(CustomFrame):
 
     def update_canvas(self) -> None:
         self.update()
-        image = funcs.get_image_widget_from_cv2(self, self.cv2_image, bg=self.color_palette['background'], relheight=self.zoom, relwidth=self.zoom, return_as_label=True)
+        image = funcs.get_image_widget_from_cv2(self, self.cv2_image, bg=self.color_palette.BACKGROUND, relheight=self.zoom, relwidth=self.zoom, return_as_label=True)
         canvas_w, canvas_h = self.canvas.winfo_width(), self.canvas.winfo_height()
         self.canvas.delete('all')
         self.canvas.create_image(canvas_w//2 + self.offset_x, canvas_h//2 + self.offset_y, anchor='center', image=image.image)
@@ -278,14 +280,14 @@ class ComingSoonFrame(CustomFrame):
     TITLE = 'Coming soon!'
     TEXT = 'This feature is still in development\nand will be available in a future update.'
 
-    def __init__(self, parent: tk.Frame, color_palette: dict) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum) -> None:
         super().__init__(parent, color_palette)
 
-        self.popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.popup_frame.place(relx=.25, rely=.3, relwidth=.5, relheight=.2)
 
-        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='w')
-        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
+        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
         label1.place(relx=.1, rely=.2, relwidth=.8, relheight=.2)
         label2.place(relx=.1, rely=.4, relwidth=.8, relheight=.5)
 
@@ -330,15 +332,15 @@ Need help? Open an issue on GitHub\nor contact @clement-marty
 Thank you for using LabBuddy!
 '''
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, app_version: str) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, app_version: str) -> None:
         super().__init__(parent, color_palette)
 
-        self.popup_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.popup_frame.place(relx=.1, rely=.1, relwidth=.8, relheight=.75)
 
-        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette['popup'], anchor='c')
-        label2 = tk.Label(self.popup_frame, text=self.TEXT_1, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
-        label3 = tk.Label(self.popup_frame, text=self.TEXT_2, font=("Arial", 12), bg=self.color_palette['popup'], anchor='w', justify='left')
+        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='c')
+        label2 = tk.Label(self.popup_frame, text=self.TEXT_1, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
+        label3 = tk.Label(self.popup_frame, text=self.TEXT_2, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
         label1.place(relx=.1, rely=.05, relwidth=.8, relheight=.05)
         label2.place(relx=.05, rely=.1, relwidth=.425, relheight=.9)
         label3.place(relx=.55, rely=.1, relwidth=.425, relheight=.9)

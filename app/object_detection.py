@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 from . import funcs
+from . import enums
 from . import frames
 
 
@@ -22,7 +23,7 @@ class ObjectDetection(frames.SubMenuOption):
     subtitle = ''
     supported_filetypes = [('Video files', '*.mp4 *.avi'), ]
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
         super().__init__(parent, color_palette, header_title, header_subtitle)
         self.color_palette = color_palette
         
@@ -317,10 +318,10 @@ class ObjectDetection(frames.SubMenuOption):
 
 class ColorBoundsSelectorFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, video_frames: list[cv2.typing.MatLike]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, video_frames: list[cv2.typing.MatLike]) -> None:
         super().__init__(parent, color_palette)
 
-        self.settings_bar = tk.Frame(self, bg=self.color_palette['popup'])
+        self.settings_bar = tk.Frame(self, bg=self.color_palette.POPUP)
         self.settings_bar.place(relx=0, rely=.8, relwidth=1, relheight=.2)
 
         # IMAGES
@@ -333,17 +334,17 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
             'from_': 0,
             'to': 255,
             'orient': tk.HORIZONTAL,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'bd': 0,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'highlightthickness': 0,
-            'troughcolor': self.color_palette['header'],
+            'troughcolor': self.color_palette.HEADER,
             'command': self._on_slider_update
         }
         label_params = {
             'master': self.settings_bar,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10),
             'anchor': 'w',
         }
@@ -382,9 +383,9 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
         button_params = {
             'master': self.settings_bar,
             'font': ('', 10),
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 1,
         }
         self.next_button = tk.Button(text='Next', **button_params, command=lambda: self.event_generate('<<ColorBoundsSelected>>'))
@@ -408,8 +409,8 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
         relx1, relx2, rely = .05, .525, .05
         relwidth, relheight = .425, .7
         mask = self._get_color_mask(self.video_frames[self.current_image], lower_bound, upper_bound)
-        self.original_image = funcs.get_image_widget_from_cv2(self, self.video_frames[self.current_image], self.color_palette['background'], relwidth, relheight)
-        self.masked_image = funcs.get_image_widget_from_cv2(self, mask, self.color_palette['background'], relwidth, relheight)
+        self.original_image = funcs.get_image_widget_from_cv2(self, self.video_frames[self.current_image], self.color_palette.BACKGROUND, relwidth, relheight)
+        self.masked_image = funcs.get_image_widget_from_cv2(self, mask, self.color_palette.BACKGROUND, relwidth, relheight)
         self.original_image.place(relx=relx1, rely=rely, relwidth=relwidth, relheight=relheight)
         self.masked_image.place(relx=relx2, rely=rely, relwidth=relwidth, relheight=relheight)
 
@@ -446,7 +447,7 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
 
 class ScaleSelectorFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, video_frames: list[cv2.typing.MatLike]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, video_frames: list[cv2.typing.MatLike]) -> None:
         super().__init__(parent, color_palette)
 
         self.video_frames = video_frames
@@ -461,15 +462,15 @@ class ScaleSelectorFrame(frames.CustomFrame):
         self.canvas = frames.PanZoomCanvas(self, self.color_palette, self.video_frames[self.current_image])
         self.canvas.place(relx=.05, rely=.05, relwidth=.9, relheight=.7)
 
-        self.settings_bar = tk.Frame(self, bg=self.color_palette['popup'])
+        self.settings_bar = tk.Frame(self, bg=self.color_palette.POPUP)
         self.settings_bar.place(relx=0, rely=.8, relwidth=1, relheight=.2)
 
         button_params = {
             'master': self.settings_bar,
             'font': ('', 10),
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 1,
         }
         # point selection buttons
@@ -484,16 +485,16 @@ class ScaleSelectorFrame(frames.CustomFrame):
         self.change_image_button.place(relx=.7, rely=.55, relwidth=.25, relheight=.35)
 
         # distance input
-        self.distance_input_label = tk.Label(self.settings_bar, text='Enter the distance between the two points:', bg=self.color_palette['popup'], font=('', 10), anchor='w', justify='left', wraplength=200)
+        self.distance_input_label = tk.Label(self.settings_bar, text='Enter the distance between the two points:', bg=self.color_palette.POPUP, font=('', 10), anchor='w', justify='left', wraplength=200)
         self.distance_input = tk.Entry(self.settings_bar, validate='all', vcmd=(self.register(self._validate_distance_input), '%P'))
-        self.distance_input.config(font=('', 10), bg=self.color_palette['popup'], bd=0, cursor='hand2')
+        self.distance_input.config(font=('', 10), bg=self.color_palette.POPUP, bd=0, cursor='hand2')
         
         self.distance_input_label.place(relx=.05, rely=.55, relwidth=.25, relheight=.35)
         self.distance_input.place(relx=.325, rely=.55, relwidth=.15, relheight=.35)
 
         # distance unit selector
         self.distance_unit_selector = tk.OptionMenu(self.settings_bar, self.distance_unit_str, 'm', 'mm', 'cm', 'km', command=self._on_distance_unit_change)
-        self.distance_unit_selector.config(bg=self.color_palette['popup'], font=('', 10), bd=0, cursor='hand2', activebackground=self.color_palette['header'])
+        self.distance_unit_selector.config(bg=self.color_palette.POPUP, font=('', 10), bd=0, cursor='hand2', activebackground=self.color_palette.HEADER)
         self.distance_unit_selector.place(relx=.475, rely=.55, relwidth=.1, relheight=.35)
         self.distance_unit_str.set('m')
 
@@ -512,12 +513,12 @@ class ScaleSelectorFrame(frames.CustomFrame):
         self.update_selector_buttons()
 
     def update_selector_buttons(self) -> None:
-        self.select_1st_point_btn.config(relief=tk.RAISED, bg=self.color_palette['popup'])
-        self.select_2nd_point_btn.config(relief=tk.RAISED, bg=self.color_palette['popup'])
+        self.select_1st_point_btn.config(relief=tk.RAISED, bg=self.color_palette.POPUP)
+        self.select_2nd_point_btn.config(relief=tk.RAISED, bg=self.color_palette.POPUP)
         if self.selected_point == 1:
-            self.select_1st_point_btn.config(relief=tk.SUNKEN, bg=self.color_palette['header'])
+            self.select_1st_point_btn.config(relief=tk.SUNKEN, bg=self.color_palette.HEADER)
         elif self.selected_point == 2:
-            self.select_2nd_point_btn.config(relief=tk.SUNKEN, bg=self.color_palette['header'])
+            self.select_2nd_point_btn.config(relief=tk.SUNKEN, bg=self.color_palette.HEADER)
         self.update()
 
     def _validate_distance_input(self, input_str: str) -> bool:
@@ -529,7 +530,7 @@ class ScaleSelectorFrame(frames.CustomFrame):
         try:
             self.distance = float(input_str)
             valid = True
-            self.distance_input.config(bg=self.color_palette['popup'])
+            self.distance_input.config(bg=self.color_palette.POPUP)
         except ValueError:
             valid = False
         if input_str == '':
@@ -561,13 +562,13 @@ class ScaleSelectorFrame(frames.CustomFrame):
     def _on_next_button_click(self) -> None:
         valid_inputs = True
         if self.first_point is None:
-            self.select_1st_point_btn.config(bg=self.color_palette['warning'])
+            self.select_1st_point_btn.config(bg=self.color_palette.WARNING)
             valid_inputs = False
         if self.second_point is None:
-            self.select_2nd_point_btn.config(bg=self.color_palette['warning'])
+            self.select_2nd_point_btn.config(bg=self.color_palette.WARNING)
             valid_inputs = False
         if self.distance is None:
-            self.distance_input.config(bg=self.color_palette['warning'])
+            self.distance_input.config(bg=self.color_palette.WARNING)
             valid_inputs = False
         if valid_inputs: self.event_generate('<<ScaleSelected>>')
 
@@ -575,7 +576,7 @@ class ScaleSelectorFrame(frames.CustomFrame):
 
 class OriginSelectorFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, video_frames: list[cv2.typing.MatLike]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, video_frames: list[cv2.typing.MatLike]) -> None:
         super().__init__(parent, color_palette)
 
         self.video_frames = video_frames
@@ -587,15 +588,15 @@ class OriginSelectorFrame(frames.CustomFrame):
         self.custom_origin: bool = False
         self.custom_origin_point: tuple[int, int] = None
 
-        self.settings_bar = tk.Frame(self, bg=self.color_palette['popup'])
+        self.settings_bar = tk.Frame(self, bg=self.color_palette.POPUP)
         self.settings_bar.place(relx=0, rely=.8, relwidth=1, relheight=.2)
 
         button_params = {
             'master': self.settings_bar,
             'font': ('', 10),
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 1,
         }
         
@@ -618,15 +619,15 @@ class OriginSelectorFrame(frames.CustomFrame):
         self.canvas.change_image(self.video_frames[self.current_image])
 
     def update_buttons(self) -> None:
-        self.custom_origin_btn.config(relief=tk.RAISED, bg=self.color_palette['popup'])
-        self.first_object_as_origin_btn.config(relief=tk.RAISED, bg=self.color_palette['popup'])
-        self.last_object_as_origin_btn.config(relief=tk.RAISED, bg=self.color_palette['popup'])
+        self.custom_origin_btn.config(relief=tk.RAISED, bg=self.color_palette.POPUP)
+        self.first_object_as_origin_btn.config(relief=tk.RAISED, bg=self.color_palette.POPUP)
+        self.last_object_as_origin_btn.config(relief=tk.RAISED, bg=self.color_palette.POPUP)
         if self.custom_origin:
-            self.custom_origin_btn.config(relief=tk.SUNKEN, bg=self.color_palette['header'])
+            self.custom_origin_btn.config(relief=tk.SUNKEN, bg=self.color_palette.HEADER)
         elif self.object_as_origin_frame == 0:
-            self.first_object_as_origin_btn.config(relief=tk.SUNKEN, bg=self.color_palette['header'])
+            self.first_object_as_origin_btn.config(relief=tk.SUNKEN, bg=self.color_palette.HEADER)
         elif self.object_as_origin_frame == len(self.video_frames) - 1:
-            self.last_object_as_origin_btn.config(relief=tk.SUNKEN, bg=self.color_palette['header'])
+            self.last_object_as_origin_btn.config(relief=tk.SUNKEN, bg=self.color_palette.HEADER)
         self.update()
 
     def _on_custom_origin_selection(self) -> None:
@@ -651,11 +652,11 @@ class OriginSelectorFrame(frames.CustomFrame):
 
     def _on_next_button_click(self) -> None:
         if self.custom_origin and not self.custom_origin_point:
-            self.custom_origin_btn.config(bg=self.color_palette['warning'])
+            self.custom_origin_btn.config(bg=self.color_palette.WARNING)
         elif not self.custom_origin and self.object_as_origin_frame is None:
-            self.custom_origin_btn.config(bg=self.color_palette['warning'])
-            self.last_object_as_origin_btn.config(bg=self.color_palette['warning'])
-            self.first_object_as_origin_btn.config(bg=self.color_palette['warning'])
+            self.custom_origin_btn.config(bg=self.color_palette.WARNING)
+            self.last_object_as_origin_btn.config(bg=self.color_palette.WARNING)
+            self.first_object_as_origin_btn.config(bg=self.color_palette.WARNING)
         else:
             self.event_generate('<<OriginSelected>>')
 
@@ -675,7 +676,7 @@ class SaveFrame(frames.CustomFrame):
     available_file_extensions = ['.csv', '.ods', '.xlsx']
     available_time_units = ['s', 'ms']
 
-    def __init__(self, parent: tk.Frame, color_palette: dict, object_positions: list[tuple[int, int]], unit: str, time_interval: float) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, object_positions: list[tuple[int, int]], unit: str, time_interval: float) -> None:
         super().__init__(parent, color_palette)
 
         self.object_positions = object_positions
@@ -691,44 +692,44 @@ class SaveFrame(frames.CustomFrame):
         self.decimal_places: int = 2
         self.invert_y_axis = tk.BooleanVar(value=False)
 
-        self.options_frame = tk.Frame(self, bg=self.color_palette['popup'])
+        self.options_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.options_frame.place(relx=.2, rely=.1, relwidth=.6, relheight=.8)
 
 
         button_params = {
             'master': self.options_frame,
             'font': ('', 10),
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 1,
         }
         label_params = {
             'master': self.options_frame,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10),
             'anchor': 'w',
             'justify': 'left'
         }
         option_menu_params = {
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'font': ('', 10),
             'bd': 0,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header']
+            'activebackground': self.color_palette.HEADER
         }
         entry_params = {
             'master': self.options_frame,
             'font': ('', 10), 
-            'bg': self.color_palette['background'],
+            'bg': self.color_palette.BACKGROUND,
             'bd': 0,
             'cursor': 'hand2'
         }
         checkbox_params = {
             'master': self.options_frame,
-            'bg': self.color_palette['popup'],
+            'bg': self.color_palette.POPUP,
             'cursor': 'hand2',
-            'activebackground': self.color_palette['header'],
+            'activebackground': self.color_palette.HEADER,
             'borderwidth': 0
         }
         title_label_params = label_params.copy()
@@ -761,7 +762,7 @@ class SaveFrame(frames.CustomFrame):
         tk.Label(text='Round values: ', **label_params).place(relx=.1, rely=.45, relwidth=.35, relheight=.05)
         self.round_values_checkbox = tk.Checkbutton(**checkbox_params, variable=self.round_values, command=self._on_round_values_checkbox_clicked)
         self.decimal_places_entry = tk.Entry(**entry_params, validate='all', vcmd=(self.register(self._validate_decimal_places_input), '%P'))
-        self.decimal_places_entry.config(bg=self.color_palette['popup'])
+        self.decimal_places_entry.config(bg=self.color_palette.POPUP)
         self.round_values_checkbox.place(relx=.55, rely=.45, relwidth=.05, relheight=.05)
         self.decimal_places_entry.place(relx=.6, rely=.45, relwidth=.25, relheight=.05)
         tk.Label(text='dp', **label_params).place(relx=.85, rely=.45, relwidth=.05, relheight=.05)
@@ -775,10 +776,10 @@ class SaveFrame(frames.CustomFrame):
 
     def _on_round_values_checkbox_clicked(self) -> None:
         if not self.round_values.get():
-            self.decimal_places_entry.config(bg=self.color_palette['popup'])
+            self.decimal_places_entry.config(bg=self.color_palette.POPUP)
             self.decimal_places_entry.delete(0, tk.END)
         else:
-            self.decimal_places_entry.config(bg=self.color_palette['background'])
+            self.decimal_places_entry.config(bg=self.color_palette.BACKGROUND)
             self.decimal_places_entry.delete(0, tk.END)
             self.decimal_places_entry.insert(0, str(self.decimal_places))
 
