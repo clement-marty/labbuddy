@@ -19,14 +19,13 @@ class CustomFrame(tk.Frame):
 
 class SubMenuOption(tk.Frame):
 
-    # Attributes to be set in the subclass
+    # Attribute to be set in the subclass
     display_name = None
-    title = None
-    subtitle = None
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, langage_pack: enums.LanguagePackEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
         tk.Frame.__init__(self, parent)
         self.color_palette = color_palette
+        self.lpack = langage_pack
         self.config(bg=self.color_palette.BACKGROUND)
 
         self.header_title = header_title
@@ -43,18 +42,16 @@ class SubMenuOption(tk.Frame):
 
 class StartFrame(CustomFrame):
 
-    TITLE = 'Welcome!'
-    TEXT = 'All tools can be seen in the sidebar.\nSelect a tool to get started.'
-
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, banner_filepath: str) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, banner_filepath: str) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.banner_filepath = banner_filepath
         self.popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.popup_frame.place(relx=.25, rely=.2, relwidth=.5, relheight=.4)
 
-        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
-        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
+        label1 = tk.Label(self.popup_frame, text=self.lpack.start_frame.WELCOME, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
+        label2 = tk.Label(self.popup_frame, text=self.lpack.start_frame.TEXT, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
         label1.place(relx=.1, rely=.5, relwidth=.8, relheight=.2)
         label2.place(relx=.1, rely=.7, relwidth=.8, relheight=.2)
 
@@ -70,7 +67,7 @@ class StartFrame(CustomFrame):
 
 class FileInputFrame(CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, title: str, text: str, filetypes: list[tuple[str, str]]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, title: str, text: str, button_text: str, filetypes: list[tuple[str, str]]) -> None:
         super().__init__(parent, color_palette)
 
         popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
@@ -83,7 +80,7 @@ class FileInputFrame(CustomFrame):
 
         button = tk.Button(
             popup_frame,
-            text='Select File',
+            text=button_text,
             font=("Arial", 15, "bold"),
             bd=0,
             bg=self.color_palette.POPUP,
@@ -277,17 +274,15 @@ class PanZoomCanvas(CustomFrame):
 
 class ComingSoonFrame(CustomFrame):
 
-    TITLE = 'Coming soon!'
-    TEXT = 'This feature is still in development\nand will be available in a future update.'
-
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.popup_frame.place(relx=.25, rely=.3, relwidth=.5, relheight=.2)
 
-        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
-        label2 = tk.Label(self.popup_frame, text=self.TEXT, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
+        label1 = tk.Label(self.popup_frame, text=self.lpack.coming_soon_frame.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='w')
+        label2 = tk.Label(self.popup_frame, text=self.lpack.coming_soon_frame.TEXT, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
         label1.place(relx=.1, rely=.2, relwidth=.8, relheight=.2)
         label2.place(relx=.1, rely=.4, relwidth=.8, relheight=.5)
 
@@ -295,52 +290,18 @@ class ComingSoonFrame(CustomFrame):
 
 class CreditsFrame(CustomFrame):
 
-    TITLE = 'About LabBuddy'
-    TEXT_1 = '''LabBuddy v1.1.1
-Physics Lab Assistant Tool
-
-DEVELOPED BY
-Clément MARTY
-GitHub: @clement-marty
-
-BUILT WITH Python 3.12
-
-THIRD-PARTY LIBRARIES
-This software uses the following\nopen-source libraries:
-• OpenCV (opencv-python 4.11.0.86)
-• Matplotlib (3.10.3)
-• NumPy (2.3.0)
-• Pandas (2.3.0)
-• Pillow (11.2.1)
-• And other supporting libraries\n(see requirements.txt)
-'''
-    TEXT_2 = '''LICENSE
-This project is licensed\nunder the MIT License.
-
-Copyright © 2025 Clément MARTY
-
-CONTRIBUTING
-Contributions are welcome! Please\nvisit our GitHub repository to:
-• Report issues or bugs
-• Suggest new features
-• Submit pull requests
-• Join discussions
-
-SUPPORT
-Need help? Open an issue on GitHub\nor contact @clement-marty
-
-Thank you for using LabBuddy!
-'''
-
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, app_version: str) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, app_version: str) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.popup_frame = tk.Frame(self, bg=self.color_palette.POPUP)
         self.popup_frame.place(relx=.1, rely=.1, relwidth=.8, relheight=.75)
 
-        label1 = tk.Label(self.popup_frame, text=self.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='c')
-        label2 = tk.Label(self.popup_frame, text=self.TEXT_1, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
-        label3 = tk.Label(self.popup_frame, text=self.TEXT_2, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
+        left_text = '\n'.join(self.lpack.credits_frame.LEFT_COLUMN_TEXT_LINES).replace('{{?}}', app_version)
+        right_text = '\n'.join(self.lpack.credits_frame.RIGHT_COLUMN_TEXT_LINES)
+        label1 = tk.Label(self.popup_frame, text=self.lpack.credits_frame.TITLE, font=("Arial", 20, 'bold'), bg=self.color_palette.POPUP, anchor='c')
+        label2 = tk.Label(self.popup_frame, text=left_text, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
+        label3 = tk.Label(self.popup_frame, text=right_text, font=("Arial", 12), bg=self.color_palette.POPUP, anchor='w', justify='left')
         label1.place(relx=.1, rely=.05, relwidth=.8, relheight=.05)
         label2.place(relx=.05, rely=.1, relwidth=.425, relheight=.9)
         label3.place(relx=.55, rely=.1, relwidth=.425, relheight=.9)

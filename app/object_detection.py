@@ -13,19 +13,12 @@ from . import frames
 
 class ObjectDetection(frames.SubMenuOption):
 
-    display_name = 'Object Detection'
-    title = 'Object Detection'
-    file_input_title = 'Select a file'
-    scale_selector_title = 'Select the scale'
-    origin_selector_title = 'Select the origin'
-    color_bounds_selector_title = 'Select the object\'s color bounds'
-    save_title = 'Save the data'
-    subtitle = ''
     supported_filetypes = [('Video files', '*.mp4 *.avi'), ]
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
-        super().__init__(parent, color_palette, header_title, header_subtitle)
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, langage_pack: enums.LanguagePackEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
+        super().__init__(parent, color_palette, langage_pack, header_title, header_subtitle)
         self.color_palette = color_palette
+        self.display_name = self.lpack.od.DISPLAY_NAME
         
         self.video_path: str = None
         self.video_fps: float = None
@@ -34,17 +27,18 @@ class ObjectDetection(frames.SubMenuOption):
     def load(self) -> None:
         self.tkraise()
 
-        self.header_title.config(text=self.title)
-        self.header_subtitle.config(text=self.subtitle)
+        self.header_title.config(text=self.lpack.od.TITLE)
+        self.header_subtitle.config(text='')
 
         self.file_input_frame = frames.FileInputFrame(
             self,
             self.color_palette,
-            title='Select an image or video',
-            text='Supported formats are MP4 and AVI',
+            title=self.lpack.od.file_input_frame.SELECT_FILE,
+            text=self.lpack.od.file_input_frame.SUPPORTED_FORMATS,
+            button_text=self.lpack.od.file_input_frame.BUTTON_TEXT,
             filetypes=self.supported_filetypes
         )
-        self.header_title.config(text=' - '.join([self.title, self.file_input_title]))
+        self.header_title.config(text=' - '.join([self.lpack.od.TITLE, self.lpack.od.file_input_frame.TITLE]))
         self.file_input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.file_input_frame.bind('<<FileSelected>>', self._on_file_selected)
 
@@ -59,10 +53,10 @@ class ObjectDetection(frames.SubMenuOption):
         self._load_video(self.video_path)
 
         # Ask the user to select a scale
-        self.scale_selector_frame = ScaleSelectorFrame(self, self.color_palette, self.video_frames)
+        self.scale_selector_frame = ScaleSelectorFrame(self, self.color_palette, self.lpack, self.video_frames)
         self.scale_selector_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.scale_selector_frame.bind('<<ScaleSelected>>', self._on_scale_selected)
-        self.header_title.config(text=' - '.join([self.title, self.scale_selector_title]))
+        self.header_title.config(text=' - '.join([self.lpack.od.TITLE, self.lpack.od.scale_selector_frame.TITLE]))
         self.scale_selector_frame.update_canvas()
 
         self.header_subtitle.config(text=self._format_path_for_display(self.video_path))
@@ -76,8 +70,8 @@ class ObjectDetection(frames.SubMenuOption):
         self.scale_distance_unit = self.scale_selector_frame.distance_unit_str
 
         # Ask the user to select an origin
-        self.origin_selector_frame = OriginSelectorFrame(self, self.color_palette, self.video_frames)
-        self.header_title.config(text=' - '.join([self.title, self.origin_selector_title]))
+        self.origin_selector_frame = OriginSelectorFrame(self, self.color_palette, self.lpack, self.video_frames)
+        self.header_title.config(text=' - '.join([self.lpack.od.TITLE, self.lpack.od.origin_selector_frame.TITLE]))
         self.origin_selector_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.origin_selector_frame.bind('<<OriginSelected>>', self._on_origin_selected)
         self.origin_selector_frame.update_canvas()
@@ -92,8 +86,8 @@ class ObjectDetection(frames.SubMenuOption):
             self.custom_origin_point = self.origin_selector_frame.custom_origin_point
 
         # Ask the user to select a color range
-        self.color_bounds_selector_frame = ColorBoundsSelectorFrame(self, self.color_palette, self.video_frames)
-        self.header_title.config(text=' - '.join([self.title, self.color_bounds_selector_title]))
+        self.color_bounds_selector_frame = ColorBoundsSelectorFrame(self, self.color_palette, self.lpack, self.video_frames)
+        self.header_title.config(text=' - '.join([self.lpack.od.TITLE, self.lpack.od.color_bounds_selector_frame.TITLE]))
         self.color_bounds_selector_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.color_bounds_selector_frame.bind('<<ColorBoundsSelected>>', self._on_color_bounds_selected)
         self.color_bounds_selector_frame.update_images()
@@ -134,8 +128,8 @@ class ObjectDetection(frames.SubMenuOption):
         )
 
         # Show the save options
-        self.save_frame = SaveFrame(self, self.color_palette, self.object_real_positions, self.scale_distance_unit.get(), 1/self.video_fps)
-        self.header_title.config(text=' - '.join([self.title, self.save_title]))
+        self.save_frame = SaveFrame(self, self.color_palette, self.lpack, self.object_real_positions, self.scale_distance_unit.get(), 1/self.video_fps)
+        self.header_title.config(text=' - '.join([self.lpack.od.TITLE, self.lpack.od.save_frame.TITLE]))
         self.save_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         self.video_mask_progress_frame.destroy()
@@ -157,7 +151,8 @@ class ObjectDetection(frames.SubMenuOption):
             if not ret:
                 break
             self.video_frames.append(frame)
-            self.video_load_progress_frame.set_progress(progress=len(self.video_frames), maximum=frame_count, text=f'Loading frames... {len(self.video_frames)}/{frame_count}')
+            text = self.lpack.od.LOADING_FRAMES + f' {len(self.video_frames)}/{frame_count}'
+            self.video_load_progress_frame.set_progress(progress=len(self.video_frames), maximum=frame_count, text=text)
         video_capture.release()
 
     def _format_path_for_display(self, path: str, max_length: int = 80) -> str:
@@ -239,7 +234,7 @@ class ObjectDetection(frames.SubMenuOption):
                 progressbar.set_progress(
                     progress=i+1,
                     maximum=frame_count,
-                    text=f'Processing frames... {i}/{frame_count}',
+                    text=self.lpack.od.PROCESSING_FRAMES + f' {i}/{frame_count}',
                     image=self._draw_object_position(frame, object_circles[i], object_centroids[i])
                 )
         
@@ -279,7 +274,7 @@ class ObjectDetection(frames.SubMenuOption):
                 progressbar.set_progress(
                     progress=i+1,
                     maximum=points_nb,
-                    text=f'Converting pixel coordinates to real positions... {i}/{points_nb}'
+                    text=self.lpack.od.CONVERTING_COORDINATES + f' {i}/{points_nb}'
                 )
 
         return real_positions
@@ -318,8 +313,9 @@ class ObjectDetection(frames.SubMenuOption):
 
 class ColorBoundsSelectorFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, video_frames: list[cv2.typing.MatLike]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, video_frames: list[cv2.typing.MatLike]) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.settings_bar = tk.Frame(self, bg=self.color_palette.POPUP)
         self.settings_bar.place(relx=0, rely=.8, relwidth=1, relheight=.2)
@@ -355,12 +351,14 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
             relx_slider = .125
             rely = 0
 
-            if i < 3: name = 'lower'; text = 'Lower'
-            else: name = 'upper'; text = 'Upper'
+            if i < 3: name = 'lower'; text = self.lpack.od.color_bounds_selector_frame.LOWER_BOUND
+            else: name = 'upper'; text = self.lpack.od.color_bounds_selector_frame.UPPER_BOUND
 
-            if i % 3 == 0: name += '_h'; text += ' H'
-            elif i % 3 == 1: name += '_s'; text += ' S'
-            else: name += '_v'; text += ' V'
+            ch = ''
+            if i % 3 == 0: name += '_h'; ch = 'H'
+            elif i % 3 == 1: name += '_s'; ch = 'S'
+            else: name += '_v'; ch = 'V'
+            text = text.replace('{{?}}', ch)
 
             slider = tk.Scale(**slider_params)
             label = tk.Label(text=text, **label_params)
@@ -388,9 +386,11 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
             'activebackground': self.color_palette.HEADER,
             'borderwidth': 1,
         }
-        self.next_button = tk.Button(text='Next', **button_params, command=lambda: self.event_generate('<<ColorBoundsSelected>>'))
+        next_text = self.lpack.od.color_bounds_selector_frame.NEXT
+        change_image_text = self.lpack.od.color_bounds_selector_frame.CHANGE_IMAGE
+        self.next_button = tk.Button(text=next_text, **button_params, command=lambda: self.event_generate('<<ColorBoundsSelected>>'))
         self.next_button.place(relx=.7, rely=.1, relwidth=.25, relheight=.35)
-        self.change_image_button = tk.Button(text='Change image', **button_params, command=self._on_change_image_button_click)
+        self.change_image_button = tk.Button(text=change_image_text, **button_params, command=self._on_change_image_button_click)
         self.change_image_button.place(relx=.7, rely=.55, relwidth=.25, relheight=.35)
         
     def update_images(self) -> None:
@@ -447,8 +447,9 @@ class ColorBoundsSelectorFrame(frames.CustomFrame):
 
 class ScaleSelectorFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, video_frames: list[cv2.typing.MatLike]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, video_frames: list[cv2.typing.MatLike]) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.video_frames = video_frames
         self.first_point: tuple[int, int] = None
@@ -474,18 +475,23 @@ class ScaleSelectorFrame(frames.CustomFrame):
             'borderwidth': 1,
         }
         # point selection buttons
-        self.select_1st_point_btn = tk.Button(text='Select first point', **button_params, command=self._on_point_1_selection)
-        self.select_2nd_point_btn = tk.Button(text='Select second point', **button_params, command=self._on_point_2_selection)
+        first_point_text = self.lpack.od.scale_selector_frame.SELECT_FIRST_POINT
+        second_point_text = self.lpack.od.scale_selector_frame.SELECT_SECOND_POINT
+        self.select_1st_point_btn = tk.Button(text=first_point_text, **button_params, command=self._on_point_1_selection)
+        self.select_2nd_point_btn = tk.Button(text=second_point_text, **button_params, command=self._on_point_2_selection)
         self.select_1st_point_btn.place(relx=.050, rely=.10, relwidth=.25, relheight=.35)
         self.select_2nd_point_btn.place(relx=.325, rely=.10, relwidth=.25, relheight=.35)
         # other buttons
-        self.next_button = tk.Button(text='Next', **button_params, command=self._on_next_button_click)
-        self.change_image_button = tk.Button(text='Change image', **button_params, command=self._on_change_image_button_click)
+        next_text = self.lpack.od.scale_selector_frame.NEXT
+        change_image_text = self.lpack.od.scale_selector_frame.CHANGE_IMAGE
+        self.next_button = tk.Button(text=next_text, **button_params, command=self._on_next_button_click)
+        self.change_image_button = tk.Button(text=change_image_text, **button_params, command=self._on_change_image_button_click)
         self.next_button.place(relx=.7, rely=.1, relwidth=.25, relheight=.35)
         self.change_image_button.place(relx=.7, rely=.55, relwidth=.25, relheight=.35)
 
         # distance input
-        self.distance_input_label = tk.Label(self.settings_bar, text='Enter the distance between the two points:', bg=self.color_palette.POPUP, font=('', 10), anchor='w', justify='left', wraplength=200)
+        distance_text = self.lpack.od.scale_selector_frame.ENTER_DISTANCE
+        self.distance_input_label = tk.Label(self.settings_bar, text=distance_text, bg=self.color_palette.POPUP, font=('', 10), anchor='w', justify='left', wraplength=200)
         self.distance_input = tk.Entry(self.settings_bar, validate='all', vcmd=(self.register(self._validate_distance_input), '%P'))
         self.distance_input.config(font=('', 10), bg=self.color_palette.POPUP, bd=0, cursor='hand2')
         
@@ -576,8 +582,9 @@ class ScaleSelectorFrame(frames.CustomFrame):
 
 class OriginSelectorFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, video_frames: list[cv2.typing.MatLike]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, video_frames: list[cv2.typing.MatLike]) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.video_frames = video_frames
         self.current_image = 0
@@ -600,15 +607,20 @@ class OriginSelectorFrame(frames.CustomFrame):
             'borderwidth': 1,
         }
         
-        self.custom_origin_btn = tk.Button(text='Select a custom origin', **button_params, command=self._on_custom_origin_selection)
-        self.first_object_as_origin_btn = tk.Button(text='First object as origin', **button_params, command=self._on_first_object_as_origin_selection)
-        self.last_object_as_origin_btn = tk.Button(text='Last object as origin', **button_params, command=self._on_last_object_as_origin_selection)
+        custom_origin_text = self.lpack.od.origin_selector_frame.SELECT_CUSTOM_ORIGIN
+        first_object_text = self.lpack.od.origin_selector_frame.FIRST_OBJECT_AS_ORIGIN
+        last_object_text = self.lpack.od.origin_selector_frame.LAST_OBJECT_AS_ORIGIN
+        self.custom_origin_btn = tk.Button(text=custom_origin_text, **button_params, command=self._on_custom_origin_selection)
+        self.first_object_as_origin_btn = tk.Button(text=first_object_text, **button_params, command=self._on_first_object_as_origin_selection)
+        self.last_object_as_origin_btn = tk.Button(text=last_object_text, **button_params, command=self._on_last_object_as_origin_selection)
         self.custom_origin_btn.place(relx=.05, rely=.10, relwidth=.525, relheight=.35)
         self.first_object_as_origin_btn.place(relx=.05, rely=.55, relwidth=.25, relheight=.35)
         self.last_object_as_origin_btn.place(relx=.325, rely=.55, relwidth=.25, relheight=.35)
 
-        self.next_button = tk.Button(text='Next', **button_params, command=self._on_next_button_click)
-        self.change_image_button = tk.Button(text='Change image', **button_params, command=self._on_change_image_button_click)
+        next_text = self.lpack.od.origin_selector_frame.NEXT
+        change_image_text = self.lpack.od.origin_selector_frame.CHANGE_IMAGE
+        self.next_button = tk.Button(text=next_text, **button_params, command=self._on_next_button_click)
+        self.change_image_button = tk.Button(text=change_image_text, **button_params, command=self._on_change_image_button_click)
         self.next_button.place(relx=.7, rely=.1, relwidth=.25, relheight=.35)
         self.change_image_button.place(relx=.7, rely=.55, relwidth=.25, relheight=.35)
 
@@ -676,8 +688,9 @@ class SaveFrame(frames.CustomFrame):
     available_file_extensions = ['.csv', '.ods', '.xlsx']
     available_time_units = ['s', 'ms']
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, object_positions: list[tuple[int, int]], unit: str, time_interval: float) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, object_positions: list[tuple[int, int]], unit: str, time_interval: float) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.object_positions = object_positions
         self.positions_unit = unit
@@ -735,31 +748,38 @@ class SaveFrame(frames.CustomFrame):
         title_label_params = label_params.copy()
         title_label_params['font'] = ('', 20, 'bold')
 
-        tk.Label(text='Save Options', **title_label_params).place(relx=.05, rely=0, relwidth=.9, relheight=.1)
+        save_options_text = self.lpack.od.save_frame.SAVE_OPTIONS
+        tk.Label(text=save_options_text, **title_label_params).place(relx=.05, rely=0, relwidth=.9, relheight=.1)
 
-        tk.Label(text='File format:', **label_params).place(relx=.1, rely=.1, relwidth=.35, relheight=.05)
+        file_format_text = self.lpack.od.save_frame.FILE_FORMAT
+        tk.Label(text=file_format_text, **label_params).place(relx=.1, rely=.1, relwidth=.35, relheight=.05)
         self.file_format_selector = tk.OptionMenu(self.options_frame, self.file_extension, *self.available_file_extensions)
         self.file_format_selector.config(**option_menu_params)
         self.file_format_selector.place(relx=.55, rely=.1, relwidth=.35, relheight=.05)
 
-        tk.Label(text='X values column name:', **label_params).place(relx=.1, rely=.2, relwidth=.35, relheight=.05)
+        x_column_text = self.lpack.od.save_frame.X_COLUMN_NAME
+        tk.Label(text=x_column_text, **label_params).place(relx=.1, rely=.2, relwidth=.35, relheight=.05)
         self.x_column_name_entry = tk.Entry(**entry_params, textvariable=self.x_column_name)
         self.x_column_name_entry.place(relx=.55, rely=.2, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Y values column name:', **label_params).place(relx=.1, rely=.25, relwidth=.35, relheight=.05)
+        y_column_text = self.lpack.od.save_frame.Y_COLUMN_NAME
+        tk.Label(text=y_column_text, **label_params).place(relx=.1, rely=.25, relwidth=.35, relheight=.05)
         self.y_column_name_entry = tk.Entry(**entry_params, textvariable=self.y_column_name)
         self.y_column_name_entry.place(relx=.55, rely=.25, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Include units to column names: ', **label_params).place(relx=.15, rely=.3, relwidth=.35, relheight=.05)
+        include_units_text = self.lpack.od.save_frame.INCLUDE_UNITS
+        tk.Label(text=include_units_text, **label_params).place(relx=.15, rely=.3, relwidth=.35, relheight=.05)
         self.include_units_checkbox = tk.Checkbutton(**checkbox_params, variable=self.include_unit)
         self.include_units_checkbox.place(relx=.55, rely=.3, relwidth=.05, relheight=.05)
 
-        tk.Label(text='Time unit:', **label_params).place(relx=.1, rely=.4, relwidth=.35, relheight=.05)
+        time_unit_text = self.lpack.od.save_frame.TIME_UNIT
+        tk.Label(text=time_unit_text, **label_params).place(relx=.1, rely=.4, relwidth=.35, relheight=.05)
         self.time_unit_selector = tk.OptionMenu(self.options_frame, self.time_unit, *self.available_time_units)
         self.time_unit_selector.config(**option_menu_params)
         self.time_unit_selector.place(relx=.55, rely=.4, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Round values: ', **label_params).place(relx=.1, rely=.45, relwidth=.35, relheight=.05)
+        round_values_text = self.lpack.od.save_frame.ROUND_VALUES
+        tk.Label(text=round_values_text, **label_params).place(relx=.1, rely=.45, relwidth=.35, relheight=.05)
         self.round_values_checkbox = tk.Checkbutton(**checkbox_params, variable=self.round_values, command=self._on_round_values_checkbox_clicked)
         self.decimal_places_entry = tk.Entry(**entry_params, validate='all', vcmd=(self.register(self._validate_decimal_places_input), '%P'))
         self.decimal_places_entry.config(bg=self.color_palette.POPUP)
@@ -767,11 +787,13 @@ class SaveFrame(frames.CustomFrame):
         self.decimal_places_entry.place(relx=.6, rely=.45, relwidth=.25, relheight=.05)
         tk.Label(text='dp', **label_params).place(relx=.85, rely=.45, relwidth=.05, relheight=.05)
 
-        tk.Label(text='Invert Y axis: ', **label_params).place(relx=.1, rely=.5, relwidth=.35, relheight=.05)
+        invert_y_axis_text = self.lpack.od.save_frame.INVERT_Y_AXIS
+        tk.Label(text=invert_y_axis_text, **label_params).place(relx=.1, rely=.5, relwidth=.35, relheight=.05)
         self.invert_y_axis_checkbox = tk.Checkbutton(**checkbox_params, variable=self.invert_y_axis)
         self.invert_y_axis_checkbox.place(relx=.55, rely=.5, relwidth=.05, relheight=.05)
 
-        self.save_btn = tk.Button(text='Save', **button_params, command=self._on_save_btn_click)
+        save_text = self.lpack.od.save_frame.SAVE
+        self.save_btn = tk.Button(text=save_text, **button_params, command=self._on_save_btn_click)
         self.save_btn.place(relx=.35, rely=.9, relwidth=.3, relheight=.05)
 
     def _on_round_values_checkbox_clicked(self) -> None:
@@ -801,7 +823,7 @@ class SaveFrame(frames.CustomFrame):
         filetype = self.file_extension.get()
         filepath = filedialog.asksaveasfilename(defaultextension=filetype)
 
-        time_col_name = f'Time ({self.time_unit.get()})'
+        time_col_name = self.lpack.od.save_frame.TIME_COLUMN_NAME + f' ({self.time_unit.get()})'
         time_power_factor = 3 if self.time_unit.get() == 'ms' else 1
         x_col_name = self.x_column_name.get().replace(',', ' ')
         y_col_name = self.y_column_name.get().replace(',', ' ')

@@ -14,18 +14,12 @@ from . import frames
 
 class MinMaxSlopes(frames.SubMenuOption):
 
-    display_name = 'Min-Max Slopes'
-    title = 'Min-Max Slopes'
-    file_input_title = 'Select a file'
-    data_selection_title = 'Select the data series'
-    plot_title = 'Results'
-    supported_filetypes = [
-        ('Spreadsheet files', '*.csv *.ods *.xlsx'),
-    ]
+    supported_filetypes = [('Spreadsheet files', '*.csv *.ods *.xlsx'),]
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
-        super().__init__(parent, color_palette, header_title, header_subtitle)
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, langage_pack: enums.LanguagePackEnum, header_title: tk.Frame, header_subtitle: tk.Frame) -> None:
+        super().__init__(parent, color_palette, langage_pack, header_title, header_subtitle)
         self.color_palette = color_palette
+        self.display_name = self.lpack.mms.DISPLAY_NAME
 
         self.filepath: str = None
         self.filetype: str = None
@@ -37,29 +31,29 @@ class MinMaxSlopes(frames.SubMenuOption):
     def load(self) -> None:
         self.tkraise()
 
-        self.header_title.config(text=self.title)
-        self.header_subtitle.config(text=self.subtitle)
+        self.header_title.config(text=self.lpack.mms.TITLE)
+        self.header_subtitle.config(text='')
 
         self.file_input_frame = frames.FileInputFrame(
             self,
             self.color_palette,
-            title='Select a spreadsheet file',
-            text='Supported formats are CSV, ODS and XLSX',
+            title=self.lpack.mms.file_input_frame.SELECT_FILE,
+            text=self.lpack.mms.file_input_frame.SUPPORTED_FORMATS,
+            button_text=self.lpack.mms.file_input_frame.BUTTON_TEXT,
             filetypes=self.supported_filetypes
         )
 
-        self.header_title.config(text=' - '.join([self.title, self.file_input_title]))
+        self.header_title.config(text=' - '.join([self.lpack.mms.TITLE, self.lpack.mms.file_input_frame.TITLE]))
         self.file_input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.file_input_frame.bind('<<FileSelected>>', self._on_file_selected)
 
     def _on_file_selected(self, event: tk.Event) -> None:
         self._load_spreadsheet(self.file_input_frame.filepath)
         self.data_selection_frame = DataSelectionFrame(
-            self, 
-            self.color_palette,
+            self, self.color_palette, self.lpack,
             **{'data': self.data} if self.data is not None else {'excel_file': self.excel_file}
         )
-        self.header_title.config(text=' - '.join([self.title, self.data_selection_title]))
+        self.header_title.config(text=' - '.join([self.lpack.mms.TITLE, self.lpack.mms.data_selection_frame.TITLE]))
         self.data_selection_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.data_selection_frame.bind('<<DataSelected>>', self._on_data_selected)
         self.file_input_frame.destroy()
@@ -82,8 +76,8 @@ class MinMaxSlopes(frames.SubMenuOption):
         elif dy_type == type_relative: self.dy_values = [self.data_selection_frame.y_uncertainties * val for val in self.y_values]
         elif dy_type == type_column: self.dy_values = self.data_selection_frame.df[self.data_selection_frame.y_uncertainties_column.get()].tolist()
 
-        self.plot_frame = PlotFrame(self, self.color_palette, self.x_values, self.y_values, self.x_column_name, self.y_column_name, self.dx_values, self.dy_values)
-        self.header_title.config(text=' - '.join([self.title, self.plot_title]))
+        self.plot_frame = PlotFrame(self, self.color_palette, self.lpack, self.x_values, self.y_values, self.x_column_name, self.y_column_name, self.dx_values, self.dy_values)
+        self.header_title.config(text=' - '.join([self.lpack.mms.TITLE, self.lpack.mms.plot_frame.TITLE]))
         self.plot_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         self.data_selection_frame.destroy()
@@ -103,19 +97,25 @@ class MinMaxSlopes(frames.SubMenuOption):
 
 class DataSelectionFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.configparser, data: pd.DataFrame = None, excel_file: pd.ExcelFile = None) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.configparser, language_pack: enums.LanguagePackEnum, data: pd.DataFrame = None, excel_file: pd.ExcelFile = None) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
         self.data = data
         self.excel_file = excel_file
 
         self.df = data if data is not None else None
-        self.uncertainties_type_selector_options = ['Relative', 'Constant', 'Select a column']
+        self.relative_dtype = self.lpack.mms.data_selection_frame.RELATIVE_TYPE
+        self.constant_dtype = self.lpack.mms.data_selection_frame.CONSTANT_TYPE
+        self.column_dtype = self.lpack.mms.data_selection_frame.SELECT_COLUMN_TYPE
+        self.uncertainties_type_selector_options = [
+            self.relative_dtype, self.constant_dtype, self.column_dtype
+        ]
 
         self.sheet_name = tk.StringVar(value=None)
         self.x_column_name = tk.StringVar(value=None)
         self.y_column_name = tk.StringVar(value=None)
-        self.x_uncertainties_type = tk.StringVar(value=self.uncertainties_type_selector_options[0])
-        self.y_uncertainties_type = tk.StringVar(value=self.uncertainties_type_selector_options[0])
+        self.x_uncertainties_type = tk.StringVar(value=self.relative_dtype)
+        self.y_uncertainties_type = tk.StringVar(value=self.relative_dtype)
         self.x_uncertainties: float = 0
         self.y_uncertainties: float = 0
         self.x_uncertainties_column = tk.StringVar(value='')
@@ -163,55 +163,64 @@ class DataSelectionFrame(frames.CustomFrame):
         title_label_params = label_params.copy()
         title_label_params['font'] = ('', 20, 'bold')
 
-        tk.Label(text='Select your data', **title_label_params).place(relx=.05, rely=0, relwidth=.9, relheight=.1)
+        select_data_text = self.lpack.mms.data_selection_frame.SELECT_DATA
+        tk.Label(text=select_data_text, **title_label_params).place(relx=.05, rely=0, relwidth=.9, relheight=.1)
 
         if self.excel_file is not None:
-            tk.Label(text='Select the sheet:', **label_params).place(relx=.1, rely=.1, relwidth=.35, relheight=.1)
+            select_sheet_text = self.lpack.mms.data_selection_frame.SELECT_SHEET
+            tk.Label(text=select_sheet_text, **label_params).place(relx=.1, rely=.1, relwidth=.35, relheight=.1)
             self.sheet_name.set(self.excel_file.sheet_names[0]) # Set the default selector value as the first sheet
             self.sheet_selector = tk.OptionMenu(self.options_frame, self.sheet_name, *self.excel_file.sheet_names, command=self._update_selector_options)
             self.sheet_selector.config(**option_menu_params)
             self.sheet_selector.place(relx=.55, rely=.1, relwidth=.35, relheight=.05)
             self.df = self.excel_file.parse(self.sheet_name.get())
 
-        tk.Label(text='X values column:', **label_params).place(relx=.1, rely=.2, relwidth=.35, relheight=.05)
+        x_column_text = self.lpack.mms.data_selection_frame.X_COLUMN
+        tk.Label(text=x_column_text, **label_params).place(relx=.1, rely=.2, relwidth=.35, relheight=.05)
         self.x_column_selector = tk.OptionMenu(self.options_frame, self.x_column_name, '', '')
         self.x_column_selector.config(**option_menu_params)
         self.x_column_selector.place(relx=.55, rely=.2, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Y values column:', **label_params).place(relx=.1, rely=.25, relwidth=.35, relheight=.05)
+        y_column_text = self.lpack.mms.data_selection_frame.Y_COLUMN
+        tk.Label(text=y_column_text, **label_params).place(relx=.1, rely=.25, relwidth=.35, relheight=.05)
         self.y_column_selector = tk.OptionMenu(self.options_frame, self.y_column_name, '', '')
         self.y_column_selector.config(**option_menu_params)
         self.y_column_selector.place(relx=.55, rely=.25, relwidth=.35, relheight=.05)
         
-        tk.Label(text='Uncertainties on X values:', **label_params).place(relx=.1, rely=.35, relwidth=.35, relheight=.05)
+        x_uncertainties_text = self.lpack.mms.data_selection_frame.X_UNCERTAINTIES
+        tk.Label(text=x_uncertainties_text, **label_params).place(relx=.1, rely=.35, relwidth=.35, relheight=.05)
         self.x_uncertainties_type_selector = tk.OptionMenu(self.options_frame, self.x_uncertainties_type, *self.uncertainties_type_selector_options, command=self._update_x_uncertainties_options)
         self.x_uncertainties_type_selector.config(**option_menu_params)
         self.x_uncertainties_type_selector.place(relx=.55, rely=.35, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Value:', **label_params).place(relx=.15, rely=.4, relwidth=.3, relheight=.05)
+        uncertainty_value_text = self.lpack.mms.data_selection_frame.UNCERTAINTY_VALUE
+        tk.Label(text=uncertainty_value_text, **label_params).place(relx=.15, rely=.4, relwidth=.3, relheight=.05)
         self.x_uncertainties_entry = tk.Entry(**entry_params, validate='all', vcmd=(self.register(self._validate_x_uncertainties_input), '%P'))
         self.x_uncertainties_entry.place(relx=.55, rely=.4, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Column:', **label_params).place(relx=.15, rely=.45, relwidth=.35, relheight=.05)
+        uncertainty_column_text = self.lpack.mms.data_selection_frame.UNCERTAINTY_COLUMN
+        tk.Label(text=uncertainty_column_text, **label_params).place(relx=.15, rely=.45, relwidth=.35, relheight=.05)
         self.x_uncertainties_column_selector = tk.OptionMenu(self.options_frame, self.x_uncertainties_column, '', '')
         self.x_uncertainties_column_selector.config(**option_menu_params)
         self.x_uncertainties_column_selector.place(relx=.55, rely=.45, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Uncertainties on Y values:', **label_params).place(relx=.1, rely=.5, relwidth=.35, relheight=.05)
+        y_uncertainties_text = self.lpack.mms.data_selection_frame.Y_UNCERTAINTIES
+        tk.Label(text=y_uncertainties_text, **label_params).place(relx=.1, rely=.5, relwidth=.35, relheight=.05)
         self.y_uncertainties_type_selector = tk.OptionMenu(self.options_frame, self.y_uncertainties_type, *self.uncertainties_type_selector_options, command=self._update_y_uncertainties_options)
         self.y_uncertainties_type_selector.config(**option_menu_params)
         self.y_uncertainties_type_selector.place(relx=.55, rely=.5, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Value:', **label_params).place(relx=.15, rely=.55, relwidth=.3, relheight=.05)
+        tk.Label(text=uncertainty_value_text, **label_params).place(relx=.15, rely=.55, relwidth=.3, relheight=.05)
         self.y_uncertainties_entry = tk.Entry(**entry_params, validate='all', vcmd=(self.register(self._validate_y_uncertainties_input), '%P'))
         self.y_uncertainties_entry.place(relx=.55, rely=.55, relwidth=.35, relheight=.05)
 
-        tk.Label(text='Column:', **label_params).place(relx=.15, rely=.6, relwidth=.35, relheight=.05)
+        tk.Label(text=uncertainty_column_text, **label_params).place(relx=.15, rely=.6, relwidth=.35, relheight=.05)
         self.y_uncertainties_column_selector = tk.OptionMenu(self.options_frame, self.y_uncertainties_column, '', '')
         self.y_uncertainties_column_selector.config(**option_menu_params)
         self.y_uncertainties_column_selector.place(relx=.55, rely=.6, relwidth=.35, relheight=.05)
 
-        self.next_btn = tk.Button(text='Next', **button_params, command=self._on_next_btn_clicked)
+        next_text = self.lpack.mms.data_selection_frame.NEXT
+        self.next_btn = tk.Button(text=next_text, **button_params, command=self._on_next_btn_clicked)
         self.next_btn.place(relx=.35, rely=.9, relwidth=.3, relheight=.05)
 
 
@@ -238,11 +247,11 @@ class DataSelectionFrame(frames.CustomFrame):
         self.x_column_selector['menu'].delete(0, tk.END)
         self.y_column_selector['menu'].delete(0, tk.END)
         update_dx_selector, update_dy_selector = False, False
-        if self.x_uncertainties_type.get() == self.uncertainties_type_selector_options[-1] and self.x_uncertainties_column.get() == '':
+        if self.x_uncertainties_type.get() == self.column_dtype and self.x_uncertainties_column.get() == '':
             self.x_uncertainties_column_selector['menu'].delete(0, tk.END)
             self.x_uncertainties_column.set(c3)
             update_dx_selector = True
-        if self.y_uncertainties_type.get() == self.uncertainties_type_selector_options[-1] and self.y_uncertainties_column.get() == '':
+        if self.y_uncertainties_type.get() == self.column_dtype and self.y_uncertainties_column.get() == '':
             self.y_uncertainties_column_selector['menu'].delete(0, tk.END)
             self.y_uncertainties_column.set(c4)
             update_dy_selector = True
@@ -264,7 +273,7 @@ class DataSelectionFrame(frames.CustomFrame):
         return self._update_uncertainties_options(uncertainty_type, self.y_uncertainties_entry, self.y_uncertainties_column_selector, self.y_uncertainties_column)
 
     def _update_uncertainties_options(self, uncertainty_type: str, entry: tk.Entry, selector: tk.OptionMenu, selector_variable: tk.StringVar) -> None:
-        if uncertainty_type == self.uncertainties_type_selector_options[-1]:
+        if uncertainty_type == self.column_dtype:
             entry.delete(0, tk.END)
             entry.config(bg=self.color_palette.HEADER)
             selector.config(bg=self.color_palette.POPUP)
@@ -284,7 +293,7 @@ class DataSelectionFrame(frames.CustomFrame):
     def _validate_uncertainties_input(self, input_str: str, x_values: bool) -> bool:
         uncertainties_type = self.x_uncertainties_type.get() if x_values else self.y_uncertainties_type
         try:
-            assert uncertainties_type != self.uncertainties_type_selector_options[-1]
+            assert uncertainties_type != self.column_dtype
             uncertainty = float(input_str)
             assert uncertainty > 0
             if x_values: self.x_uncertainties = uncertainty
@@ -309,8 +318,9 @@ class DataSelectionFrame(frames.CustomFrame):
 
 class PlotFrame(frames.CustomFrame):
 
-    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, x_values: list[float], y_values: list[float], x_name: str, y_name: str, dx_values: list[float], dy_values: list[float]) -> None:
+    def __init__(self, parent: tk.Frame, color_palette: enums.ColorPaletteEnum, language_pack: enums.LanguagePackEnum, x_values: list[float], y_values: list[float], x_name: str, y_name: str, dx_values: list[float], dy_values: list[float]) -> None:
         super().__init__(parent, color_palette)
+        self.lpack = language_pack
 
         self.x_values, self.y_values = x_values, y_values
         self.x_name, self.y_name = x_name, y_name
@@ -329,9 +339,12 @@ class PlotFrame(frames.CustomFrame):
         self.slope_min_frame = tk.Frame(self.btns_frame)
         self.slope_max_frame = tk.Frame(self.btns_frame)
         self.slope_result_frame = tk.Frame(self.btns_frame)
-        self._display_slope_equation(self.slope_min_frame, self.min_slope, self.min_y_intercept, 'Minimum Slope:')
-        self._display_slope_equation(self.slope_max_frame, self.max_slope, self.max_y_intercept, 'Maximum Slope:')
-        self._display_slope_result(self.slope_result_frame, self.avg_slope, self.slope_uncertainty, 'Value of the slope (y=mx+c):')
+        min_slope_text = self.lpack.mms.plot_frame.MINIMUM_SLOPE
+        max_slope_text = self.lpack.mms.plot_frame.MAXIMUM_SLOPE
+        slope_value_text = self.lpack.mms.plot_frame.SLOPE_VALUE
+        self._display_slope_equation(self.slope_min_frame, self.min_slope, self.min_y_intercept, min_slope_text)
+        self._display_slope_equation(self.slope_max_frame, self.max_slope, self.max_y_intercept, max_slope_text)
+        self._display_slope_result(self.slope_result_frame, self.avg_slope, self.slope_uncertainty, slope_value_text)
         self.slope_min_frame.place(relx=.0, rely=0, relwidth=.5, relheight=.5)
         self.slope_max_frame.place(relx=.5, rely=0, relwidth=.5, relheight=.5)
         self.slope_result_frame.place(relx=.5, rely=.5, relwidth=.5, relheight=.5)

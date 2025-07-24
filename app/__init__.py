@@ -25,6 +25,7 @@ class Application(tk.Tk):
         banner_inverted_filepath = os.path.join(os.getcwd(), config.get('application.assets', 'banner_inverted'))
         self.color_palette = enums.ColorPaletteEnum(config)
         self.icons = enums.IconsEnum(config)
+        self.lpack = enums.LanguagePackEnum(config.get('application', 'language_pack'))
 
         self.title(title)
         self.geometry('1200x800')
@@ -80,18 +81,20 @@ class Application(tk.Tk):
             SidebarSubMenu(
                 self.submenues_frame,
                 self.main_frame,
-                'Video Analysis',
+                self.lpack.submenus_names.VIDEO_ANALYSIS,
                 [ObjectDetection],
                 self.color_palette,
+                self.lpack,
                 self.header_title,
                 self.header_subtitle
             ),
             SidebarSubMenu(
                 self.submenues_frame,
                 self.main_frame,
-                'Uncertainty Tools',
+                self.lpack.submenus_names.UNCERTAINTY_TOOLS,
                 [MinMaxSlopes],
                 self.color_palette,
+                self.lpack,
                 self.header_title,
                 self.header_subtitle
             )
@@ -147,7 +150,7 @@ class Application(tk.Tk):
         )
         version_label = tk.Label(
             self.submenues_frame,
-            text=f'version {self.version}',
+            text=self.lpack.APP_VERSION.replace('{{?}}', self.version),
             bg=self.color_palette.SIDEBAR,
             font=('', 10, 'italic'),
             fg='#ffffff',
@@ -157,7 +160,7 @@ class Application(tk.Tk):
         
         
         # START FRAME
-        self.start_frame = StartFrame(self.main_frame, self.color_palette, banner_inverted_filepath)
+        self.start_frame = StartFrame(self.main_frame, self.color_palette, self.lpack, banner_inverted_filepath)
         self.start_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.start_frame.load()
 
@@ -167,14 +170,14 @@ class Application(tk.Tk):
     def show_coming_soon_frame(self):
         self.header_title.config(text='')
         self.header_subtitle.config(text='')
-        frame = ComingSoonFrame(self.main_frame, self.color_palette)
+        frame = ComingSoonFrame(self.main_frame, self.color_palette, self.lpack)
         frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         frame.tkraise()
 
     def show_credits_frame(self):
         self.header_title.config(text='')
         self.header_subtitle.config(text='')
-        frame = CreditsFrame(self.main_frame, self.color_palette, self.version)
+        frame = CreditsFrame(self.main_frame, self.color_palette, self.lpack, self.version)
         frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         frame.tkraise()
     
@@ -186,10 +189,11 @@ class Application(tk.Tk):
 
 class SidebarSubMenu(tk.Frame):
 
-    def __init__(self, parent: tk.Frame, main_frame: tk.Frame, heading: str, option_classes: list, color_palette: enums.ColorPaletteEnum, header_title, header_subtitle) -> None:
+    def __init__(self, parent: tk.Frame, main_frame: tk.Frame, heading: str, option_classes: list, color_palette: enums.ColorPaletteEnum, langage_pack: enums.LanguagePackEnum, header_title, header_subtitle) -> None:
         tk.Frame.__init__(self, parent)
 
         self.color_palette = color_palette
+        self.lpack = langage_pack
         self.header_title = header_title
         self.header_subtitle = header_subtitle
 
@@ -211,7 +215,7 @@ class SidebarSubMenu(tk.Frame):
 
         self.options = []
         for option_class in option_classes:
-            option = option_class(main_frame, self.color_palette, self.header_title, self.header_subtitle)
+            option = option_class(main_frame, self.color_palette, self.lpack, self.header_title, self.header_subtitle)
             option.place(relx=0, rely=0, relwidth=1, relheight=1)
             self.options.append(option)
 
