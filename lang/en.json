@@ -1,0 +1,150 @@
+{
+    "language": "English",
+    "app_version": "version {{?}}",
+
+    "submenus_names": {
+        "video_analysis": "Video Analysis",
+        "uncertainty_tools": "Uncertainty Tools"
+    },
+
+    "object_detection": {
+        "display_name": "Object Detection",
+        "title": "Object Detection",
+        "loading_frames": "Loading frames...",
+        "processing_frames": "Processing frames...",
+        "converting_coordinates": "Converting pixel coordinates to real positions...",
+        "file_input_frame": {
+            "title": "Select a file",
+            "select_file": "Select an image or video",
+            "supported_formats": "Supported formats are MP4 and AVI",
+            "button_text": "Select file"
+        },
+        "scale_selector_frame": {
+            "title": "Select the scale",
+            "select_first_point": "Select first point",
+            "select_second_point": "Select second point",
+            "enter_distance": "Enter the distance between the two points:",
+            "next": "Next",
+            "change_image": "Change image"
+        },
+        "origin_selector_frame": {
+            "title": "Select the origin",
+            "select_custom_origin": "Select a custom origin",
+            "first_object_as_origin": "First object as origin",
+            "last_object_as_origin": "Last object as origin",
+            "next": "Next",
+            "change_image": "Change image"
+        },
+        "color_bounds_selector_frame": {
+            "title": "Select the object's color bounds",
+            "upper_bound": "Upper {{?}}",
+            "lower_bound": "Lower {{?}}",
+            "next": "Next",
+            "change_image": "Change image"
+        },
+        "save_frame": {
+            "title": "Save the data",
+            "save_options": "Save options",
+            "file_format": "File format:",
+            "x_column_name": "X values column name:",
+            "y_column_name": "Y values column name:",
+            "include_units": "Include units to column names:",
+            "time_unit": "Time unit:",
+            "round_values": "Round values:",
+            "invert_y_axis": "Invert Y axis:",
+            "save": "Save",
+            "time_column_name": "Time"
+        }
+    },
+
+    "minmax_slopes": {
+        "display_name": "Min-Max Slopes",
+        "title": "Min-Max Slopes",
+
+        "file_input_frame": {
+            "title": "Select a file",
+            "select_file": "Select a spreadsheet file",
+            "supported_formats": "Supported formats are CSV, ODS and XLSX",
+            "button_text": "Select file"
+        },
+
+        "data_selection_frame": {
+            "title": "Select the data",
+            "relative_type": "Relative",
+            "constant_type": "Constant",
+            "select_column_type": "Select a column",
+            "select_data": "Select your data",
+            "select_sheet": "Select the sheet:",
+            "x_column": "X values column:",
+            "y_column": "Y values column:",
+            "x_uncertainties": "Uncertainties on X values:",
+            "y_uncertainties": "Uncertainties on Y values:",
+            "uncertainty_value": "Value:",
+            "uncertainty_column": "Column:",
+            "next": "Next"
+
+        },
+
+        "plot_frame": {
+            "title": "Results",
+            "minimum_slope": "Minimum slope:",
+            "maximum_slope": "Maximum slope:",
+            "slope_value": "Value of the slope (y=mx+c):"
+        }
+    },
+
+    "start_frame": {
+        "welcome": "Welcome!",
+        "text": "All tools can be seen in the sidebar on the left.\nSelect a tool to get started."
+    },
+
+    "coming_soon_frame": {
+        "title": "Coming soon!",
+        "text": "This feature is still under development\nand will be available in a future update."
+    },
+
+    "credits_frame": {
+        "title": "Credits",
+        "left_column_text_lines": [
+            "LabBuddy v{{?}}",
+            "Physics Lab Assistant Tool",
+            "",
+            "DEVELOPED BY",
+            "Clément MARTY",
+            "GitHub: @clement-marty",
+            "",
+            "BUILT WITH Python 3.12",
+            "",
+            "THIRD-PARTY LIBRARIES",
+            "This software uses the following",
+            "open-source libraries:",
+            "• OpenCV (opencv-python 4.11.0.86)",
+            "• Matplotlib (3.10.3)",
+            "• NumPy (2.3.0)",
+            "• Pandas (2.3.0)",
+            "• Pillow (11.2.1)",
+            "• And other supporting libraries\n(see requirements.txt)"
+        ],
+        "right_column_text_lines": [
+            "LICENSE",
+            "This project is licensed",
+            "under the MIT License.",
+            "",
+            "Copyright © 2025 Clément MARTY",
+            "",
+            "CONTRIBUTING",
+            "Contributions are welcome! Please",
+            "visit the project's GitHub repository to:",
+            "• Report issues or bugs",
+            "• Suggest new features",
+            "• Submit pull requests",
+            "• Join discussions",
+            "",
+            "SUPPORT",
+            "Need help? Open an issue on GitHub",
+            "or contact @clement-marty",
+            "",
+            "Thank you for using LabBuddy!"
+        ]
+    }
+}
